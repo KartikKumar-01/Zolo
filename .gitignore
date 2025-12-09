@@ -1,0 +1,25 @@
+# Node dependencies
+server/node_modules/
+
+# Environment variables
+server/.env
+
+# Build output (TypeScript compiled files)
+server/dist/
+server/build/
+server/out/
+
+# TypeScript cache
+server/*.tsbuildinfo
+
+# Logs
+server/logs/
+server/*.log
+
+# System
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
