@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "./auth.model";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 
-export const register = async (req: Request, res: Response) => {
+export const registerController = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
     const user = await registerUser(name, email, password);
@@ -22,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const loginController = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const { user, accessToken, refreshToken } = await loginUser(
@@ -53,7 +53,7 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const refreshAccessToken = async (req: Request, res: Response) => {
+export const refreshAccessTokenController = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
 
@@ -103,7 +103,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   }
 };
 
-export const logout = async (req: Request, res: Response) => {
+export const logoutController = async (req: Request, res: Response) => {
   try {
     res.clearCookie("refreshToken", {
       httpOnly: true,

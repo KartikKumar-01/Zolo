@@ -33,7 +33,6 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
 
 
-    // Chat app related fields:
     avatar: {
       type: String,
       default: "",

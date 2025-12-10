@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import authRoutes from "./modules/auth/auth.routes";
+import conversatoinRoutes from "./modules/conversation/conversation.routes";
 import cookieParser from "cookie-parser";
 
 const app: Application = express();
@@ -12,11 +13,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: true,
-    credentials: true, 
+    credentials: true,
   })
 );
 app.use(helmet());
 app.use("/api/auth/", authRoutes);
+app.use("/api/conversations/", conversatoinRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend running");
