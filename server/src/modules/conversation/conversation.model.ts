@@ -6,6 +6,8 @@ export interface IConversation extends Document {
   participants: mongoose.Types.ObjectId[];
   admins?: mongoose.Types.ObjectId[];
   lastMessage?: mongoose.Types.ObjectId | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const ConversationSchema = new Schema<IConversation>(
