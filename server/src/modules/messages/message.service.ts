@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Conversation from "../conversation/conversation.model";
 import Message from "./message.model";
+import ConversationRead from "../conversation/conversationRead.model";
 
 interface SendMessageType {
   conversationId: string;
@@ -89,6 +90,27 @@ export const fetchMessagesService = async ({
 
   const hasMore = messages.length > limit;
   if (hasMore) messages.pop();
+
+  let conversationRead = await ConversationRead.findOne({
+    conversationId: new mongoose.Types.ObjectId(conversationId),
+    userId: new mongoose.Types.ObjectId(userId),
+  });
+
+  if (!conversationRead) {
+    conversationRead = await ConversationRead.create({
+      conversationId: new mongoose.Types.ObjectId(conversationId),
+      userId: new mongoose.Types.ObjectId(userId),
+      lastReadMessageId: null,
+    });
+  }
+
+  if (messages.length > 0) {
+    const latestMessage = messages[0];
+    await ConversationRead.findOneAndUpdate(conversationRead._id, {
+      lastReadMessageId: latestMessage,
+    });
+  }
+
   return {
     messages: messages.reverse(),
     hasMore,

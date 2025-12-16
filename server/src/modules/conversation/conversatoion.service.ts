@@ -1,6 +1,8 @@
 import Conversation, { IConversation } from "./conversation.model";
 import { HydratedDocument } from "mongoose";
 import mongoose from "mongoose";
+import ConversationRead from "./conversationRead.model";
+import Message from "../messages/message.model";
 
 export const createOrGetDM = async (
   userId: string,
@@ -52,3 +54,41 @@ export const createGroup = async (
 
     return conversation;
 }
+
+
+export const getConversationsService = async (userId: string) => {
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  const conversations = await Conversation.find({
+    participants: userObjectId,
+  })
+    .populate("lastMessage")
+    .sort({ updatedAt: -1 });
+
+  const results = await Promise.all(
+    conversations.map(async (conv) => {
+      const readState = await ConversationRead.findOne({
+        conversationId: conv._id,
+        userId: userObjectId,
+      });
+
+      const unreadQuery: any = {
+        conversationId: conv._id,
+        sender: { $ne: userObjectId },
+      };
+
+      if (readState?.lastReadMessageId) {
+        unreadQuery._id = { $gt: readState.lastReadMessageId };
+      }
+
+      const unreadCount = await Message.countDocuments(unreadQuery);
+
+      return {
+        ...conv.toObject(),
+        unreadCount,
+      };
+    })
+  );
+
+  return results;
+};

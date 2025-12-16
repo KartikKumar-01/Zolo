@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import mongoose from "mongoose";
-import { createGroup, createOrGetDM } from "./conversatoion.service";
+import { createGroup, createOrGetDM, getConversationsService } from "./conversatoion.service";
 
 export const getOrCreateConversationController = async (
   req: AuthRequest,
@@ -89,5 +89,18 @@ export const createGrooupConversationController = async (
       success: false,
       message: "Server error",
     });
+  }
+};
+
+
+export const getConversations = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    const conversations = await getConversationsService(req.userId!);
+    res.status(200).json({ success: true, conversations });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
