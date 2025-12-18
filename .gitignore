@@ -1,25 +1,52 @@
+# ===============================
 # Node dependencies
+# ===============================
 server/node_modules/
+client/node_modules/
 
+# ===============================
 # Environment variables
+# ===============================
 server/.env
+client/.env
+client/.env.local
+client/.env.development
+client/.env.production
 
-# Build output (TypeScript compiled files)
+# ===============================
+# Build output
+# ===============================
+# Backend
 server/dist/
 server/build/
 server/out/
 
-# TypeScript cache
-server/*.tsbuildinfo
+# Frontend (Vite)
+client/dist/
+client/build/
+client/.vite/
 
+# ===============================
+# TypeScript cache
+# ===============================
+server/*.tsbuildinfo
+client/*.tsbuildinfo
+
+# ===============================
 # Logs
+# ===============================
 server/logs/
 server/*.log
+client/*.log
 
+# ===============================
 # System
+# ===============================
 .DS_Store
 Thumbs.db
 
-# IDE
+# ===============================
+# IDE / Editor
+# ===============================
 .vscode/
 .idea/
