@@ -1,4 +1,4 @@
-import type { Message } from "./message";
+import type { Message } from "./message.types";
 
 export interface Conversation{
     _id: string,

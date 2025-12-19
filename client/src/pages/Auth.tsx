@@ -3,8 +3,8 @@ import { useState } from "react";
 // import CardHero from "@/components/auth/CardHero";
 import CardForms from "@/components/auth/CardForms";
 import "@/styles.css";
-import CardNav from "./CardNav";
-import CardHero from "./CardHero";
+import CardNav from "@/components/auth/CardNav";
+import CardHero from "@/components/auth/CardHero";
 
 const Auth = () => {
   const [view, setView] = useState<"signin" | "signup">("signin");

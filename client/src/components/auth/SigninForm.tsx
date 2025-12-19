@@ -6,15 +6,12 @@ import { toast } from "sonner";
 import "@/index.css";
 import "@/styles.css";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
+import { loginApi } from "@/services/auth.service";
+import type { AxiosError } from "axios";
 
 interface SignInFormProp {
   toggleView: () => void;
@@ -28,9 +25,23 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
       password: "",
     },
   });
-  const onSubmit = (data: LoginFormValues) => {
-    console.log("LOGIN PAYLOAD →", data);
-    // 🔜 backend API call here
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      const res = await loginApi(data);
+      const { success, message, tokens, user } = res.data;
+
+      if (!success) {
+        toast.error(message);
+        return;
+      }
+
+      localStorage.setItem("accessToken", tokens.access);
+      toast(`Welcome back, ${user.name}`);
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+
+      toast.error(err.response?.data?.message || "Invalid email or password");
+    }
   };
 
   const showValidationErrorToast = () => {
@@ -54,6 +65,7 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
       <form
         onSubmit={form.handleSubmit(onSubmit, showValidationErrorToast)}
         className="active"
+        autoComplete="off"
       >
         <p>
           Don't have an account?{" "}

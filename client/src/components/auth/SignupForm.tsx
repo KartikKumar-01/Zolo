@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import "@/styles.css";
-import {toast} from 'sonner'
+import { toast } from "sonner";
 
 import {
   Form,
@@ -13,16 +13,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import {
-  registerSchema,
-  type RegisterFormValues,
-} from "@/schemas/auth.schema";
+import { registerSchema, type RegisterFormValues } from "@/schemas/auth.schema";
+import { registerApi } from "@/services/auth.service";
+import {AxiosError } from "axios";
 
-interface SignUpFormProp{
-    toggleView: () => void;
+interface SignUpFormProp {
+  toggleView: () => void;
 }
 
-const SignupForm = ({toggleView}: SignUpFormProp) => {
+const SignupForm = ({ toggleView }: SignUpFormProp) => {
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -32,30 +31,51 @@ const SignupForm = ({toggleView}: SignUpFormProp) => {
     },
   });
 
-  const onSubmit = (data: RegisterFormValues) => {
-    console.log("REGISTER PAYLOAD →", data);
-    // 🔜 backend register API
+  const onSubmit = async (data: RegisterFormValues) => {
+    try {
+      const res = await registerApi(data);
+      const {success, message, user} = res.data;
+      if(!success){
+        return toast.error(message || "Registration failed");
+      }
+      toast("Account created successfully. Please log in.");
+      toggleView();
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+
+    toast.error(
+      err.response?.data?.message ||
+      "Not able to register. Please try again later"
+    );
+    }
   };
   const showValidationErrorToast = () => {
-      const errors = form.formState.errors;
-  
-      if (errors.email) {
-        toast.error(errors.email.message || "Invalid email");
-        return;
-      }
-  
-      if (errors.password) {
-        toast.error(errors.password.message || "Invalid password");
-        return;
-      }
-  
-      toast.error("Please fix the errors in the form");
-    };
+    const errors = form.formState.errors;
+
+    if (errors.email) {
+      toast.error(errors.email.message || "Invalid email");
+      return;
+    }
+
+    if (errors.password) {
+      toast.error(errors.password.message || "Invalid password");
+      return;
+    }
+
+    toast.error("Please fix the errors in the form");
+  };
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, showValidationErrorToast)} className="active">
+      <form
+        onSubmit={form.handleSubmit(onSubmit, showValidationErrorToast)}
+        className="active"
+        autoComplete="off"
+      >
         <p>
-          Already have an account? <button type="button" onClick={toggleView} className="btn">Sign in</button>
+          Already have an account?{" "}
+          <button type="button" onClick={toggleView} className="btn">
+            Sign in
+          </button>
         </p>
 
         {/* Name */}
@@ -78,7 +98,6 @@ const SignupForm = ({toggleView}: SignUpFormProp) => {
                   <i className="ai-person" />
                 </div>
               </FormControl>
-
             </FormItem>
           )}
         />
@@ -103,7 +122,6 @@ const SignupForm = ({toggleView}: SignUpFormProp) => {
                   <i className="ai-envelope" />
                 </div>
               </FormControl>
-
             </FormItem>
           )}
         />
@@ -129,17 +147,14 @@ const SignupForm = ({toggleView}: SignUpFormProp) => {
                   <i className="ai-lock-on" />
                 </div>
               </FormControl>
-
             </FormItem>
           )}
         />
 
-        <button type="submit">
-          SIGN UP
-        </button>
+        <button type="submit">SIGN UP</button>
       </form>
     </Form>
-  )
+  );
 };
 
 export default SignupForm;

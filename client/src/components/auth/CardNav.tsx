@@ -22,7 +22,7 @@ const CardNav = ({view, toggleView}: CardNavProps) => {
       ></span>
     </li>
     {navButtons.map((btn) => (
-      <li>
+      <li key={btn.name}>
         <NavButton
           icon={btn.icon}
           label={btn.label}
