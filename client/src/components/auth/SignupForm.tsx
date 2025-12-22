@@ -34,7 +34,7 @@ const SignupForm = ({ toggleView }: SignUpFormProp) => {
   const onSubmit = async (data: RegisterFormValues) => {
     try {
       const res = await registerApi(data);
-      const {success, message, user} = res.data;
+      const {success, message} = res.data;
       if(!success){
         return toast.error(message || "Registration failed");
       }
