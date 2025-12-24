@@ -12,12 +12,16 @@ import { Input } from "@/components/ui/input";
 import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
 import { loginApi } from "@/services/auth.service";
 import type { AxiosError } from "axios";
+import { useUser } from "@/context/useUser";
+import { useNavigate } from "react-router-dom";
 
 interface SignInFormProp {
   toggleView: () => void;
 }
 
 const SigninForm = ({ toggleView }: SignInFormProp) => {
+  const {setUser} = useUser();
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -36,7 +40,9 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
       }
 
       localStorage.setItem("accessToken", tokens.access);
+      setUser(user)
       toast(`Welcome back, ${user.name}`);
+      navigate('/chat')
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
 

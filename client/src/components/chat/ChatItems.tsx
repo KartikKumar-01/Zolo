@@ -1,8 +1,9 @@
 import ChatItem from "./ChatItem";
+import '@/styles.css'
 
 const ChatItems = () => {
   return (
-    <div className="chat-items flex-col h-full w-full overflow-y-scroll">
+    <div className="chat-items flex-col h-full w-full overflow-y-scroll scrollbar-hidden">
       <ChatItem />
       <ChatItem />
       <ChatItem />

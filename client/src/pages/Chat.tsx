@@ -7,7 +7,7 @@ const Chat = () => {
   return (
     <div className="main h-screen w-screen overflow-hidden grid grid-cols-[60px_1fr]">
       <Sidebar />
-      <div className="chat flex overflow-auto w-full h-full">
+      <div className="chat flex overflow-hidden w-full h-full">
         <ChatList />
         <ChatArea />
       </div>

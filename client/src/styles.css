@@ -141,7 +141,7 @@ body {
       rgba(30, 30, 47, 0.6),
       rgba(30, 30, 47, 0.8)
     ),
-    url("../public/Gemini_Generated_Image_3fsbl63fsbl63fsb.png");
+    url("../public/sign-up-hero.png");
   display: flex;
   flex-direction: column;
   align-items: baseline;
@@ -153,7 +153,7 @@ body {
       rgba(30, 30, 47, 0.6),
       rgba(30, 30, 47, 0.8)
     ),
-    url("../public/Gemini_Generated_Image_xou3ckxou3ckxou3.png");
+    url("../public/sign-in-hero.png");
 }
 
 /* .welcome-panel::before {
@@ -308,4 +308,14 @@ body {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+
+.chat-items::-webkit-scrollbar {
+  display: none;
+}
+
+
+.chat-list{
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
