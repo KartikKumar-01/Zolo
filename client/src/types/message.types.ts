@@ -1,7 +1,9 @@
+import type { ChatUser } from "./conversation.types";
+
 export interface Message{
     _id: string,
     conversationId: string,
-    sender: string,
+    sender: ChatUser,
     content: string,
     type: "text" | "image" | "file",
     readBy: string[],

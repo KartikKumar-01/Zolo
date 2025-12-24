@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import mongoose from "mongoose";
-import { createGroup, createOrGetDM, getConversationsService } from "./conversatoion.service";
+import { createGroup, createOrGetDM, getConversationsService } from "./conversation.service";
 
 export const getOrCreateConversationController = async (
   req: AuthRequest,

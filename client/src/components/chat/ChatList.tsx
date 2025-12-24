@@ -1,13 +1,18 @@
-import ChatItems from './ChatItems'
 import '@/styles.css'
+import type { Conversation } from '@/types/conversation.types';
+import ChatItems from './ChatItems';
 
-const ChatList = () => {
+interface ChatListProps {
+  conversations: Conversation[];
+}
+
+const ChatList = ({conversations = []} : ChatListProps) => {
   return (
     <div className='chat-list bg-[#202329] flex flex-col overflow-y-auto scrollbar-hide items-center w-[300px] h-full rounded-tl-3xl rounded-bl-3xl py-5 px-3 gap-4'>
       <div className="search w-[90%] h-[40px]">
         <input type="text" className='w-full h-full rounded-md py-2 px-3' placeholder='Search...'/>
       </div>
-      <ChatItems />
+      <ChatItems conversations={conversations} />
     </div>
   )
 }

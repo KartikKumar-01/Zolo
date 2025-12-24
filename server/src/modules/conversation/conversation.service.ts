@@ -62,7 +62,15 @@ export const getConversationsService = async (userId: string) => {
   const conversations = await Conversation.find({
     participants: userObjectId,
   })
-    .populate("lastMessage")
+  .populate("participants", "name avatar")
+  .populate("admins", "name avatar")
+    .populate({
+      path: "lastMessage",
+      populate: {
+        path: "sender",
+        select: "name avatar",
+      }
+    })
     .sort({ updatedAt: -1 });
 
   const results = await Promise.all(
@@ -80,6 +88,7 @@ export const getConversationsService = async (userId: string) => {
       if (readState?.lastReadMessageId) {
         unreadQuery._id = { $gt: readState.lastReadMessageId };
       }
+
 
       const unreadCount = await Message.countDocuments(unreadQuery);
 
