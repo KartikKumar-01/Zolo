@@ -290,4 +290,68 @@ This backend implements an **industry-grade chat architecture** similar to Whats
 
 ---
 
+## 🎨 Frontend – Work Completed So Far
+
+### 🔐 Authentication UI
+- Login form using React Hook Form + Zod
+- Signup form using React Hook Form + Zod
+- Reusable UI components
+
+---
+
+### 🔗 Frontend ↔ Backend Integration
+- Axios client configured with credentials support
+- Login integrated with `/auth/login`
+- Signup integrated with `/auth/register`
+- Access token stored after successful login
+- Refresh token securely managed via HttpOnly cookie
+
+Frontend does **not** access refresh tokens directly.
+
+---
+
+### 🧠 Frontend Architecture
+- TypeScript-first
+- Service layer mapping 1:1 to backend APIs
+- Backend remains the source of truth
+
+---
+
+## ⚙️ Technical Highlights
+
+- Pagination-safe unread logic
+- No per-message read flags
+- One DB write per chat open
+- Secure auth token separation
+- Socket.IO-ready architecture
+
+---
+
+## 🔜 Next Planned Steps
+
+### Backend
+- Socket.IO real-time messaging
+- Redis-backed unread optimization
+- Read receipts (“Seen by”)
+- Group permission enforcement
+
+### Frontend
+- Auth bootstrap via `/auth/me`
+- Access token refresh interceptor
+- Protected routes
+- Real-time UI updates with Socket.IO
+
+---
+
+## 🏁 Conclusion
+
+Zolo implements an **industry-grade chat architecture** with:
+
+- Clean separation of concerns
+- Scalable unread message system
+- Secure authentication flow
+- Frontend and backend designed to evolve together
+
+---
+
 👨‍💻 Built as part of the **Zolo Project**
