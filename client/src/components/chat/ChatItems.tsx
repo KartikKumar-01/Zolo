@@ -1,6 +1,7 @@
 import type { Conversation } from "@/types/conversation.types";
 import ChatItem from "./ChatItem";
 import '@/styles.css'
+import { useConversation } from "@/context/useConversation";
 
 interface ChatListProps {
   conversations: Conversation[];
@@ -8,12 +9,15 @@ interface ChatListProps {
 
 
 const ChatItems = ({conversations} : ChatListProps) => {
+  const {selectedConversation, setSelectedConversation} = useConversation();
   return (
     <div className="chat-items flex flex-col h-full w-full overflow-y-scroll scrollbar-hidden">
       {conversations.map((convo) => (
         <ChatItem 
         key={convo._id}
         conversation={convo}
+        isActive={selectedConversation?._id === convo._id}
+        onClick={() => setSelectedConversation(convo)}
         />
       ))}
     </div>

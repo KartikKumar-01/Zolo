@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 
 const Chat = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+
   useEffect(() => {
     fetchConversations().then(setConversations);
   }, []);
