@@ -38,7 +38,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     fetchMe();
   }, [])
 
-  console.log("USER CONTEXT STATE →", user);
 
   const logout = () => {
     setUser(null);

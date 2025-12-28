@@ -1,19 +1,32 @@
+interface ChatTopBarProp {
+  conversationName?: string;
+  isOnline?: boolean;
+  participantsCount: number;
+}
 
-const ChatTopBar = () => {
+const ChatTopBar = ({
+  conversationName,
+  isOnline=false,
+  participantsCount,
+}: ChatTopBarProp) => {
   return (
-    <div className="absolute flex items-center justify-between top-0 border-red-700 border w-full h-[60px] p-2 gap-3">
+    <header className="sticky top-0 z-10 flex items-center gap-3 h-[60px] px-4 border-b border-[rgba(255,255,255,0.3)]">
       <div className="chat-img h-[40px] w-[40px] bg-white rounded-md"></div>
 
-      <div className="chat-info flex flex-col justify-center w-1/2 ">
-        <p>Lorem, ipsum dolor.</p>
-        <p className="text-sm tracking-tight">Lorem ipsum dolor sit amet.</p>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium truncate">{conversationName}</p>
+        <p className="text-xs text-muted-foreground">
+          {participantsCount <= 2
+            ? isOnline ? "Online" : "Offline"
+            : `${participantsCount} members`}
+        </p>
       </div>
-      
-      <div className="chat-options w-1/2 flex justify-end items-center">
-        <div className="rounded-full bg-white h-[45px] w-[45px]"></div>
-        <div className="rounded-full bg-white h-[45px] w-[45px]"></div>
+
+      <div className="flex items-center gap-2">
+        <button className="h-10 w-10 bg-white rounded-full hover:bg-muted" />
+        <button className="h-10 w-10 bg-white rounded-full hover:bg-muted" />
       </div>
-    </div>
+    </header>
   );
 };
 
