@@ -4,7 +4,6 @@ import { useUser } from "@/context/useUser";
 import ChatMessage from "./ChatMessage";
 import { fetchMessages } from "@/api/messages";
 import { useEffect, useState } from "react";
-import type { MessageResponse } from "@/types/message.types";
 
 const MessagesArea = () => {
   const { selectedConversation, messages, setMessages } = useConversation();

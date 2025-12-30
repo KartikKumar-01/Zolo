@@ -6,16 +6,19 @@ import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./context/UserContext.tsx";
 import ConversationProvider from "./context/ConversationContext.tsx";
+import SocketProvider from "./context/SocketProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <UserProvider>
-      <ConversationProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <UserProvider>
+        <SocketProvider>
+          <ConversationProvider>
           <Toaster position="top-right" richColors />
           <App />
-        </BrowserRouter>
-      </ConversationProvider>
-    </UserProvider>
+        </ConversationProvider>
+        </SocketProvider>
+      </UserProvider>
+    </BrowserRouter>
   </StrictMode>
 );

@@ -25,6 +25,10 @@ export const sendMessage = async (req: AuthRequest, res: Response) => {
       type,
     });
 
+    const io = req.app.get("io");
+    console.log("Emitting message:new to room:", `conversation:${conversationId}`);
+    io.to(`conversation:${conversationId}`).emit("message:new", message);
+
     return res.status(201).json({
       success: true,
       message: "Message sent successfully",

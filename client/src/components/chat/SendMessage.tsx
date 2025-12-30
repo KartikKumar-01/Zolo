@@ -1,11 +1,11 @@
 import { sendMessage } from "@/api/messages";
 import { useConversation } from "@/context/useConversation";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const SendMessage = () => {
   
-  const {selectedConversation, messages, setMessages} = useConversation();
+  const {selectedConversation} = useConversation();
   const [message, setMessage] = useState("");
   const handleSend = async () => {
     if (!message.trim()) {
@@ -16,7 +16,7 @@ const SendMessage = () => {
         conversationId: selectedConversation?._id,
         content: message,
       });
-      setMessages((prev) => [...prev, newMessage]);
+      // setMessages((prev) => [...prev, newMessage]);
       setMessage("");
     } catch (err) {
         toast.error("Failed to send message.");
