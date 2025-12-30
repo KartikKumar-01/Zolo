@@ -4,9 +4,9 @@ import api from "@/api/api";
 
 interface UserContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   logout: () => void;
-  loading: boolean;
+  loading: boolean; 
 }
 
 export const UserContext = createContext<UserContextType | null>(null);

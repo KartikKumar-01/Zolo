@@ -4,7 +4,6 @@ A scalable, production-ready chat backend built with **Node.js, Express, TypeScr
 
 This README documents **all the work completed so far**, the **design decisions**, and **flow diagrams** to clearly explain how the system works.
 
----
 
 ## 📌 Features Implemented (So Far)
 
@@ -29,7 +28,6 @@ This README documents **all the work completed so far**, the **design decisions*
 * Works for DM and Group chats
 * Pagination-safe
 
----
 
 ## 🧱 Core Data Models
 
@@ -37,7 +35,6 @@ This README documents **all the work completed so far**, the **design decisions*
 
 Stores basic user details (name, avatar, etc.).
 
----
 
 ### 2️⃣ Conversation
 
@@ -50,7 +47,6 @@ Represents a chat (DM or Group).
 * `admins`: User IDs (group only)
 * `lastMessage`: Message ID
 
----
 
 ### 3️⃣ Message
 
@@ -66,7 +62,6 @@ Represents a single chat message.
 
 Messages are **immutable**.
 
----
 
 ### 4️⃣ ConversationRead (MOST IMPORTANT)
 
@@ -84,7 +79,6 @@ Tracks read state **per user per conversation**.
 
 This model enables scalable unread message logic.
 
----
 
 ## 🧠 Core Design Principle (Unread Messages)
 
@@ -100,7 +94,6 @@ message._id <= lastReadMessageId
 
 Unread messages are **derived**, not stored.
 
----
 
 ## 🔁 Flow Diagrams
 
@@ -133,7 +126,6 @@ Return message
 * No unread state updated here
 * Message writes stay fast
 
----
 
 ### 2️⃣ Fetch Messages (Mark as Read Flow)
 
@@ -164,7 +156,6 @@ Return messages
 
 📌 This is the **only place** where messages are marked as read.
 
----
 
 ### 3️⃣ Fetch Conversations (Unread Count Flow)
 
@@ -199,7 +190,6 @@ Attach unreadCount
 Return conversation list
 ```
 
----
 
 ## 🧩 Data Relationship Diagram
 
@@ -220,7 +210,6 @@ ConversationRead
 * `Message` is immutable
 * `ConversationRead` is user-specific
 
----
 
 ## 📊 Unread Count Formula
 
@@ -234,7 +223,6 @@ Unread Messages =
 
 If `lastReadMessageId` is `null` → all messages from others are unread.
 
----
 
 ## 🧪 Example Timeline
 
@@ -258,7 +246,6 @@ Unread count for B:
 0
 ```
 
----
 
 ## ⚙️ Technical Highlights
 
@@ -268,7 +255,6 @@ Unread count for B:
 * Works for DM & Group chats
 * Socket.IO ready
 
----
 
 ## 🔜 Next Planned Steps
 
@@ -278,7 +264,6 @@ Unread count for B:
 * Read receipts ("Seen by X")
 * Group admin permissions
 
----
 
 ## 🏁 Conclusion
 
@@ -288,70 +273,35 @@ This backend implements an **industry-grade chat architecture** similar to Whats
 * Scalable unread message design
 * Extensible for real-time features
 
----
 
 ## 🎨 Frontend – Work Completed So Far
 
 ### 🔐 Authentication UI
-- Login form using React Hook Form + Zod
-- Signup form using React Hook Form + Zod
-- Reusable UI components
 
----
 
 ### 🔗 Frontend ↔ Backend Integration
-- Axios client configured with credentials support
-- Login integrated with `/auth/login`
-- Signup integrated with `/auth/register`
-- Access token stored after successful login
-- Refresh token securely managed via HttpOnly cookie
 
 Frontend does **not** access refresh tokens directly.
 
----
 
 ### 🧠 Frontend Architecture
-- TypeScript-first
-- Service layer mapping 1:1 to backend APIs
-- Backend remains the source of truth
 
----
 
 ## ⚙️ Technical Highlights
 
-- Pagination-safe unread logic
-- No per-message read flags
-- One DB write per chat open
-- Secure auth token separation
-- Socket.IO-ready architecture
 
----
 
 ## 🔜 Next Planned Steps
 
 ### Backend
-- Socket.IO real-time messaging
-- Redis-backed unread optimization
-- Read receipts (“Seen by”)
-- Group permission enforcement
 
 ### Frontend
-- Auth bootstrap via `/auth/me`
-- Access token refresh interceptor
-- Protected routes
-- Real-time UI updates with Socket.IO
 
----
 
 ## 🏁 Conclusion
 
 Zolo implements an **industry-grade chat architecture** with:
 
-- Clean separation of concerns
-- Scalable unread message system
-- Secure authentication flow
-- Frontend and backend designed to evolve together
 
----
 
 👨‍💻 Built as part of the **Zolo Project**

@@ -4,7 +4,7 @@ import { Toaster } from "sonner";
 import "@/index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
-import { UserProvider } from "./context/UserContext.tsx";
+import { UserProvider } from "./context/UserProvider.tsx";
 import ConversationProvider from "./context/ConversationContext.tsx";
 import SocketProvider from "./context/SocketProvider.tsx";
 
