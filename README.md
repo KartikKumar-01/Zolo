@@ -260,19 +260,76 @@ Unread count for B:
 
 ---
 
+---
+
+## ⚡ Real-Time Messaging Architecture (Socket.IO)
+
+### Design Rules
+- REST APIs **create data**
+- Socket.IO **delivers events**
+- Clients never send messages via socket
+- Server emits socket events **after DB persistence**
+
+---
+
+### 🏠 Socket Room Strategy
+
+#### Conversation Room
+```
+conversation:<conversationId>
+```
+Used for:
+- Real-time messages
+- Typing indicators (future)
+- Read receipts (future)
+
+Joined when:
+- User opens a conversation
+
+Left when:
+- User switches conversation
+
+---
+
+#### User Room
+Used for:
+- Notifications
+- Unread updates
+- Presence (future)
+
+Joined on:
+- Socket connection
+
+---
+
+### 🔁 Real-Time Message Flow
+
+#### Sender
+```
+Send message → REST API
+→ DB save
+→ REST response
+→ Sender UI updates immediately
+```
+
+#### Receiver
+```
+socket.on("message:new")
+→ append message to state
+→ UI updates instantly
+```
 ## ⚙️ Technical Highlights
 
 * Pagination-safe unread logic
 * No per-message read flags
 * One DB write per chat open
 * Works for DM & Group chats
-* Socket.IO ready
+* Real-time messaging using Socket.IO
 
 ---
 
 ## 🔜 Next Planned Steps
 
-* Real-time messaging using Socket.IO
 * Real-time unread updates
 * Aggregation-based unread optimization
 * Read receipts ("Seen by X")
@@ -286,7 +343,7 @@ This backend implements an **industry-grade chat architecture** similar to Whats
 
 * Clean separation of concerns
 * Scalable unread message design
-* Extensible for real-time features
+* With real-time features
 
 ---
 
@@ -330,7 +387,6 @@ Frontend does **not** access refresh tokens directly.
 ## 🔜 Next Planned Steps
 
 ### Backend
-- Socket.IO real-time messaging
 - Redis-backed unread optimization
 - Read receipts (“Seen by”)
 - Group permission enforcement
