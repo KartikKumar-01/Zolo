@@ -11,7 +11,9 @@ const Chat = () => {
 
     const {setConversations} = useConversation();
     useEffect(() => {
-        fetchConversations().then(setConversations);
+        fetchConversations().then(setConversations).catch((error) => {
+            console.error("Failed to fetch conversations...", error);
+    });
     }, [setConversations]);
     return (
         <div className="main relative h-screen w-screen overflow-hidden grid grid-cols-[60px_1fr]">

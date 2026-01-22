@@ -11,15 +11,26 @@ const SendMessage = () => {
         if (!message.trim()) {
             return toast.error("Cannot send empty message.");
         }
+        if (!selectedConversation?._id) {
+            toast.error("Select a conversation first.");
+            return;
+        }
         try {
             const newMessage = await sendMessage({
-                conversationId: selectedConversation?._id,
+                conversationId: selectedConversation._id,
                 content: message,
             });
             setMessage("");
         } catch (err) {
-            toast.error("Failed to send message.");
-            console.error("Failed to send message", err.message);
+            const errorMessage = err instanceof Error ? err.message : null;
+
+            toast.error(
+                errorMessage
+                    ? `Failed to send message: ${errorMessage}`
+                    : "Failed to send message."
+            );
+
+            console.error("Failed to send message", err);
         }
     };
 

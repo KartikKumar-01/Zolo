@@ -109,7 +109,7 @@ const NewConversationDialog = ({
                                         {user.name}
                                     </div>
                                     <div className="text-gray-400 text-sm">
-                                        @{user.username}
+                                        {user.username ? `@${user.username}` : ""}
                                     </div>
                                 </div>
                             </button>

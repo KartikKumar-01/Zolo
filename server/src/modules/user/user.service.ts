@@ -42,6 +42,10 @@ export const setUserNameService = async ({
     };
 };
 
+const escapeRegex = (str: string): string =>
+    str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+
 export const getUsers = async (searchQuery: string, currentUser: string) => {
     let users;
     const baseQuery = {
@@ -50,11 +54,12 @@ export const getUsers = async (searchQuery: string, currentUser: string) => {
     }
 
     if (searchQuery && searchQuery.trim() !== "") {
+        const escapedQuery = escapeRegex(searchQuery.trim());
         users = await User.find({
             ...baseQuery,
             $or: [
-                {name: {$regex: `^${searchQuery}`, $options: "i"}},
-                {username: {$regex: `^${searchQuery}`, $options: "i"}}
+                {name: {$regex: `^${escapedQuery}`, $options: "i"}},
+                {username: {$regex: `^${escapedQuery}`, $options: "i"}}
             ]
         }).select("_id name username avatar")
             .limit(10)

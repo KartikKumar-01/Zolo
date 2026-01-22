@@ -13,9 +13,7 @@ const NewConversationBtn = () => {
     const {addConversation, setSelectedConversation} = useConversation();
 
     const handleStartConversation = async (user: User) => {
-        console.log("Starting conversation with:", user._id);
 
-        // alert("Communication started");
         try {
             const otherUserId = user._id;
             const conversation = await createConversation(otherUserId);

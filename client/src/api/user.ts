@@ -6,6 +6,6 @@ export const setUsername = async (username: string) => {
 }
 
 export const fetchSearchedUsers = async (searchQuery: string) => {
-    const res = await api.get(`/user/search?q=${searchQuery}`);
+    const res = await api.get(`/user/search?q=${encodeURIComponent(searchQuery)}`);
     return res.data.data;
 }
