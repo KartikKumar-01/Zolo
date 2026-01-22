@@ -5,7 +5,7 @@ import "@/index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./context/UserProvider.tsx";
-import ConversationProvider from "./context/ConversationContext.tsx";
+import ConversationProvider from "./context/ConversationProvider.tsx";
 import SocketProvider from "./context/SocketProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(

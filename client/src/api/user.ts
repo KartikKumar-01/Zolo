@@ -4,3 +4,8 @@ export const setUsername = async (username: string) => {
     const res = await api.post("/user/set-username", {username});
     return res.data.data;
 }
+
+export const fetchSearchedUsers = async (searchQuery: string) => {
+    const res = await api.get(`/user/search?q=${searchQuery}`);
+    return res.data.data;
+}

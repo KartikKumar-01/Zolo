@@ -1,6 +1,4 @@
 import { useState } from "react";
-// import CardNav from "@/components/auth/CardNav";
-// import CardHero from "@/components/auth/CardHero";
 import CardForms from "@/components/auth/CardForms";
 import "@/styles.css";
 import CardNav from "@/components/auth/CardNav";

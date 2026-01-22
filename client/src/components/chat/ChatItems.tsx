@@ -1,14 +1,13 @@
-import type { Conversation } from "@/types/conversation.types";
 import ChatItem from "./ChatItem";
 import "@/styles.css";
 import { useConversation } from "@/context/useConversation";
 
-interface ChatListProps {
-  conversations: Conversation[];
-}
+// interface ChatListProps {
+//   conversations: Conversation[];
+// }
 
-const ChatItems = ({ conversations }: ChatListProps) => {
-  const { selectedConversation, setSelectedConversation } = useConversation();
+const ChatItems = () => {
+  const { conversations, selectedConversation, setSelectedConversation } = useConversation();
   return (
     <div className="chat-items flex flex-col gap-1 h-full w-full overflow-y-scroll scrollbar-hidden">
       {conversations.map((convo) => (

@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import User from "../auth/auth.model";
-import { setUserNameService } from "./user.service";
+import {getUsers, setUserNameService} from "./user.service";
 
 export const setUserName = async (req: AuthRequest, res: Response) => {
   try {
@@ -69,3 +69,29 @@ export const setUserName = async (req: AuthRequest, res: Response) => {
     }
   }
 };
+
+
+export const searchUsers = async (req: AuthRequest, res: Response) => {
+  try{
+    const userId = req.userId;
+    if(!userId){
+      return res.status(401).json({message: "Unauthorized"});
+    }
+
+    const q = typeof req.query.q === "string" ? req.query.q : "";
+    const users = await getUsers(q, userId);
+
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users,
+    })
+
+  }catch (error: any) {
+    console.error("Search users error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+    });
+  }
+}

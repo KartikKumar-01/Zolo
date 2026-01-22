@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, type ReactNode } from 'react'
+import { createContext, useEffect, type ReactNode } from 'react'
 import { useUser } from './useUser';
 import { socket } from '@/lib/socket';
 import { type ServerToClientEvents, type ClientToServerEvents } from '@/types/socket';
