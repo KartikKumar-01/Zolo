@@ -36,7 +36,7 @@ const SendMessage = () => {
 
     return (
         <div
-            className={`sticky bottom-0 w-full flex gap-2 items-center justify-center h-[80px]`}
+            className={`sticky bottom-0 w-full flex gap-2 items-center justify-center min-h-[80px] px-4 py-4 bg-primary z-30 border-t border-[rgba(255,255,255,0.08)] lg:border-t-0 send-message-container`}
         >
             <input
                 type="text"
@@ -50,7 +50,7 @@ const SendMessage = () => {
             <button
                 onClick={handleSend}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg
-            hover:bg-blue-600/90 transition disabled:opacity-50"
+            hover:bg-blue-600/90 transition disabled:opacity-50 whitespace-nowrap"
                 disabled={!message.trim()}
             >
                 Send

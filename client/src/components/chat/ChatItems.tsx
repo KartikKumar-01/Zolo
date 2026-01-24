@@ -2,12 +2,18 @@ import ChatItem from "./ChatItem";
 import "@/styles.css";
 import { useConversation } from "@/context/useConversation";
 
-// interface ChatListProps {
-//   conversations: Conversation[];
-// }
+interface ChatItemsProps {
+  onChatSelect?: () => void;
+}
 
-const ChatItems = () => {
+const ChatItems = ({ onChatSelect }: ChatItemsProps) => {
   const { conversations, selectedConversation, setSelectedConversation } = useConversation();
+  
+  const handleChatClick = (convo: typeof conversations[0]) => {
+    setSelectedConversation(convo);
+    onChatSelect?.();
+  };
+
   return (
     <div className="chat-items flex flex-col gap-1 h-full w-full overflow-y-scroll scrollbar-hidden">
       {conversations.map((convo) => (
@@ -15,7 +21,7 @@ const ChatItems = () => {
           key={convo._id}
           conversation={convo}
           isActive={selectedConversation?._id === convo._id}
-          onClick={() => setSelectedConversation(convo)}
+          onClick={() => handleChatClick(convo)}
         />
       ))}
     </div>

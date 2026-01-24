@@ -12,6 +12,7 @@ const CardForms = ({ view, toggleView }: CardFormsProps) => {
     <div className="card-form">
       <div
         className="forms"
+        data-view={view}
         style={{
           top: view === "signin" ? "0%" : "-100%",
         }}

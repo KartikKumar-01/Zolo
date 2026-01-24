@@ -45,44 +45,55 @@ const UsernameDialog = ({ open, setOpen }: UsernameDialogProps) => {
     }
   };
 
+  if (!open) return null;
+
   return (
-    <>
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={(e) => {
+          // Prevent closing on backdrop click - username is required
+          e.stopPropagation();
+        }}
+      />
 
-          <div className="relative z-10 w-full max-w-md rounded-xl bg-zinc-900 p-6 shadow-xl">
-            <h2 className="text-lg font-semibold text-white">
-              Set your username
-            </h2>
+      {/* Dialog */}
+      <div className="relative z-10 w-full max-w-md rounded-2xl bg-[#252A31] border border-[#30363D] p-6 sm:p-8 shadow-2xl">
+        <h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+          Set your username
+        </h2>
 
-            <p className="mt-1 text-sm text-zinc-400">
-              This will be visible to other users in chats.
+        <p className="text-sm text-[#8B95A7] mb-6">
+          This will be visible to other users in chats.
+        </p>
+
+        <form onSubmit={handleSave} className="space-y-4">
+          <div>
+            <input
+              autoFocus
+              type="text"
+              value={username}
+              disabled={loading}
+              onChange={(e) => setUsernameValue(e.target.value)}
+              placeholder="Enter username"
+              className="w-full rounded-lg border border-[#30363D] bg-[#1A1D23] px-4 py-3 text-sm text-[#E5E7EB] placeholder-[#8B95A7] outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            <p className="mt-2 text-xs text-[#8B95A7]">
+              3–20 characters, letters, numbers, _ or .
             </p>
-
-            <form onSubmit={handleSave} className="mt-4 space-y-4">
-              <input
-                autoFocus
-                type="text"
-                value={username}
-                disabled={loading}
-                onChange={(e) => setUsernameValue(e.target.value)}
-                placeholder="Enter username"
-                className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white outline-none focus:border-indigo-500"
-              />
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-md bg-indigo-500 py-2 text-sm font-medium text-white hover:bg-indigo-400 disabled:opacity-50"
-              >
-                {loading ? "Saving..." : "Save username"}
-              </button>
-            </form>
           </div>
-        </div>
-      )}
-    </>
+
+          <button
+            type="submit"
+            disabled={loading || !username.trim()}
+            className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 py-3 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
+          >
+            {loading ? "Saving..." : "Save username"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 

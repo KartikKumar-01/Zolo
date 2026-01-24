@@ -25,11 +25,14 @@ body {
   background-size: cover;
   background-position: center;
   color: #f9f9f9;
+  min-height: 100vh;
   height: 100vh;
   display: grid;
   place-items: center;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   font-family: "Euclid Circular B";
+  padding: 16px;
 }
 
 .login-2 ul {
@@ -61,17 +64,20 @@ body {
 .login-2 {
   display: flex;
   align-content: stretch;
-  width: 660px;
+  width: 100%;
+  max-width: 660px;
+  min-height: 360px;
   height: 360px;
   background: #242b43;
   backdrop-filter: blur(20px);
   box-shadow: 0 0 0 1px rgba(79, 110, 247, 0.08),
     0 40px 100px rgba(0, 0, 0, 0.7);
-
   border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .login-2 .card-nav {
+  --bar-position: 0;
   position: relative;
   align-self: stretch;
   display: flex;
@@ -82,7 +88,7 @@ body {
 
 .login-2 .card-nav .active-bar {
   position: absolute;
-  top: 33.33%;
+  top: calc(33.33% + (var(--bar-position) * 33.33%));
   left: 0;
   width: 5px;
   height: 33.33%;
@@ -307,6 +313,179 @@ body {
   cursor: pointer;
 }
 
+/* ---------- Responsive: stacked layout ---------- */
+@media (max-width: 864px) {
+  .page.login-2-page {
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    align-items: flex-start;
+  }
+
+  .login-2 {
+    flex-direction: column;
+    height: auto;
+    min-height: 320px;
+    max-height: min(90vh, 640px);
+    overflow-y: auto;
+  }
+
+  .login-2 .card-nav {
+    flex-direction: row;
+    width: 100%;
+    min-height: 56px;
+    flex-shrink: 0;
+    order: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .login-2 .card-nav li:first-child {
+    position: absolute;
+    inset: 0;
+    flex: 0 0 auto;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .login-2 .card-nav li:not(:first-child) {
+    flex: 1 1 50%;
+  }
+
+  .login-2 .card-nav .active-bar {
+    top: auto;
+    bottom: 0;
+    left: calc(var(--bar-position) * 50%);
+    width: 50%;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .login-2 .card-nav button {
+    flex-direction: row;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .login-2 .card-nav button i {
+    font-size: 20px;
+  }
+
+  .login-2 .card-hero {
+    order: 2;
+    flex: 0 0 auto;
+    min-height: 120px;
+    max-height: 160px;
+    margin: 0;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .login-2 .card-hero-content {
+    height: 100%;
+    min-height: 120px;
+  }
+
+  .login-2 .card-hero h2 {
+    font-size: 1.25rem;
+  }
+
+  .login-2 .card-hero h3 {
+    font-size: 11px;
+    margin-bottom: 16px;
+  }
+
+  .login-2 .card-form {
+    order: 3;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    padding: 16px 20px 20px;
+  }
+
+  .login-2 .card-form form {
+    height: auto;
+    min-height: 280px;
+    padding: 16px 0;
+    gap: 6px;
+  }
+
+  .login-2 .card-form .forms {
+    position: relative;
+    height: auto;
+    top: 0 !important;
+    display: block;
+  }
+
+  .login-2 .card-form .forms > * {
+    position: relative;
+    height: auto;
+  }
+
+  .login-2 .card-form .forms[data-view="signin"] > *:last-child,
+  .login-2 .card-form .forms[data-view="signup"] > *:first-child {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .page.login-2-page {
+    padding: 8px;
+  }
+
+  .login-2 {
+    max-height: 95vh;
+    border-radius: 4px;
+  }
+
+  .login-2 .card-nav {
+    min-height: 52px;
+  }
+
+  .login-2 .card-nav button {
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .login-2 .card-nav button i {
+    font-size: 18px;
+  }
+
+  .login-2 .card-hero {
+    min-height: 100px;
+    max-height: 140px;
+  }
+
+  .login-2 .card-hero h2 {
+    font-size: 1.1rem;
+  }
+
+  .login-2 .card-hero h3 {
+    font-size: 10px;
+  }
+
+  .login-2 .card-form {
+    padding: 12px 16px 16px;
+  }
+
+  .login-2 .card-form form {
+    min-height: 240px;
+    padding: 12px 0;
+  }
+
+  .login-2 .control input {
+    height: 38px;
+  }
+
+  .login-2 .card-form form > button {
+    height: 38px;
+    margin-top: 8px;
+  }
+
+  .login-2 p {
+    font-size: 11px;
+    margin: 10px 0;
+  }
+}
+
 .glass {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
@@ -358,4 +537,61 @@ body {
 
 .chat-item.active::before {
   background-color: #3b82f6;
+}
+
+/* Safe area support for mobile devices */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Message input area safe area support */
+.send-message-container {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .send-message-container {
+    padding-bottom: 1rem;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 1023px) {
+  /* Prevent body scroll when chat is open */
+  body.chat-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+
+  /* Smooth scrolling */
+  .chat-items {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Touch-friendly hit targets */
+  .chat-item {
+    min-height: 60px;
+    padding: 12px 8px;
+  }
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Messages area improvements */
+@media (max-width: 1023px) {
+  /* Better touch scrolling for messages */
+  .messages-area {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
 }

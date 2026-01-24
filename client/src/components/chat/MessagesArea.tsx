@@ -3,12 +3,13 @@ import { useConversation } from "@/context/useConversation";
 import { useUser } from "@/context/useUser";
 import ChatMessage from "./ChatMessage";
 import { fetchMessages } from "@/api/messages";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const MessagesArea = () => {
   const { selectedConversation, messages, setMessages } = useConversation();
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const isEmpty = !selectedConversation?.lastMessage && messages.length === 0;
 
   useEffect(() => {
@@ -21,6 +22,12 @@ const MessagesArea = () => {
           conversationId: selectedConversation._id,
         });
         setMessages(data);
+        // Scroll to bottom after messages load
+        setTimeout(() => {
+          if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+          }
+        }, 100);
       } catch (err) {
         console.log("Failed to load messages", err);
       } finally {
@@ -29,16 +36,27 @@ const MessagesArea = () => {
     };
     loadMessages();
   }, [selectedConversation?._id, setMessages]);
-  return (
 
-    
-    <div className={`flex-1 flex flex-col items-center ${isEmpty ? "justify-center" : "justify-end"} text-center p-6 max-w-[95%] overflow-y-auto`}>
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messages.length > 0 && messagesEndRef.current && !loading) {
+      const timeoutId = setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [messages.length, loading]);
+
+  return (
+    <div className={`flex-1 flex flex-col ${isEmpty ? "justify-center items-center" : "justify-end"} overflow-y-auto scrollbar-hide`}>
       {loading ? (
-        <div className="text-sm text-muted-foreground">Loading message....</div>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-sm text-muted-foreground">Loading messages...</div>
+        </div>
       ) : (isEmpty ? (
         <EmptyMessages />
       ) : (
-        <>
+        <div className="flex flex-col gap-1.5 px-3 sm:px-4 py-3 sm:py-4 w-full">
           {messages.map((msg) => (
             <ChatMessage
               key={msg._id}
@@ -46,7 +64,8 @@ const MessagesArea = () => {
               isOwn={msg.sender === user?._id}
             />
           ))}
-        </>
+          <div ref={messagesEndRef} />
+        </div>
       ))}
     </div>
   );

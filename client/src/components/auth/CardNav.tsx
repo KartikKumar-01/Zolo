@@ -1,8 +1,8 @@
-import '@/styles.css'
-import NavButton from './NavButton';
+import type { CSSProperties } from "react";
+import "@/styles.css";
+import NavButton from "./NavButton";
 
-
-interface CardNavProps{
+interface CardNavProps {
     view: "signup" | "signin";
     toggleView: () => void;
 }
@@ -13,13 +13,12 @@ const navButtons = [
 
 const CardNav = ({view, toggleView}: CardNavProps) => {
   return (
-    <ul className="card-nav">
+    <ul
+      className="card-nav"
+      style={{ "--bar-position": view === "signin" ? 0 : 1 } as CSSProperties}
+    >
     <li>
-      {/* <img src='/> */}
-      <span
-        className="active-bar"
-        style={{ top: view === "signin" ? "33.33%" : "66.66%" }}
-      ></span>
+      <span className="active-bar" aria-hidden="true" />
     </li>
     {navButtons.map((btn) => (
       <li key={btn.name}>

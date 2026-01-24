@@ -2,9 +2,13 @@ import "@/styles.css";
 import ChatItems from "./ChatItems";
 import NewConversationBtn from "@/components/chat/NewConversationBtn";
 
-const ChatList = () => {
+interface ChatListProps {
+    onChatSelect?: () => void;
+}
+
+const ChatList = ({ onChatSelect }: ChatListProps) => {
     return (
-        <div className="chat-list bg-primary flex flex-col w-[300px] h-full rounded-tl-3xl rounded-bl-3xl py-5 px-3 gap-4 relative">
+        <div className="chat-list bg-primary flex flex-col w-full lg:w-[300px] h-full lg:rounded-tl-3xl lg:rounded-bl-3xl py-5 px-3 gap-4 relative pb-20 lg:pb-5">
 
             <div className="w-full">
                 <input
@@ -18,7 +22,7 @@ const ChatList = () => {
             </div>
 
             <div className="flex-1 overflow-y-auto scrollbar-hide">
-                <ChatItems />
+                <ChatItems onChatSelect={onChatSelect} />
             </div>
 
             <NewConversationBtn />

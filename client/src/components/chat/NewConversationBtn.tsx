@@ -35,7 +35,7 @@ const NewConversationBtn = () => {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="absolute bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-50"
+                className="absolute bottom-20 lg:bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-40"
                 aria-label="Start new conversation"
             >
                 <Plus className="w-6 h-6 text-white" strokeWidth={2.5}/>
