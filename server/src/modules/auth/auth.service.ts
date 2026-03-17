@@ -45,7 +45,10 @@ export const loginUser = async (email: string, password: string) => {
     { expiresIn: "7d" }
   );
 
-  const {password: _, ...safeUser} = user.toObject();
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  const { password: _, ...safeUser } = user.toObject();
 
   return {
     user: safeUser,

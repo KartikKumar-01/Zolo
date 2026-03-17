@@ -13,7 +13,7 @@ export const initSocket = (server: any) => {
 
     io.use(socketAuth);
 
-    io.on("connection", (socket) => {
+    io.on("connection", (socket: any) => {
         console.log("User Connected: ", socket.userId);
         socket.join(socket.userId!);
 

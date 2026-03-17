@@ -39,9 +39,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("accessToken");
+  const logout = async () => {
+    try{
+      await api.post('/auth/logout');
+    }catch(err){
+      console.log("Logout error: ", err);
+    }finally {
+      setUser(null);
+      localStorage.removeItem("accessToken");
+    }
   };
   return (
     <UserContext.Provider value={{ user, setUser, logout, loading }}>

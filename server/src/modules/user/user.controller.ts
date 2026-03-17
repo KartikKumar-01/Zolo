@@ -1,9 +1,9 @@
-import { Response } from "express";
+import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import User from "../auth/auth.model";
-import {getUsers, setUserNameService} from "./user.service";
+import { getUsers, setUserNameService } from "./user.service";
 
-export const setUserName = async (req: AuthRequest, res: Response) => {
+export const setUserName = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = req.userId;
     if (!userId) {
@@ -30,52 +30,41 @@ export const setUserName = async (req: AuthRequest, res: Response) => {
   } catch (error: any) {
     switch (error.message) {
       case "USERNAME_TOO_SHORT":
-        return res.status(400).json({
-          success: false,
-          message: "Username must be at least 3 characters.",
-        });
+        error.statusCode = 400;
+        error.message = "Username must be at least 3 characters.";
+        break;
 
       case "USERNAME_ALREADY_SET":
-        return res.status(400).json({
-          success: false,
-          message: "Username is already set and cannot be changed.",
-        });
+        error.statusCode = 400;
+        error.message = "Username is already set and cannot be changed.";
+        break;
 
       case "USERNAME_TAKEN":
-        return res.status(409).json({
-          success: false,
-          message: "Username is already taken.",
-        });
+        error.statusCode = 409;
+        error.message = "Username is already taken.";
+        break;
 
       case "INVALID_USERNAME":
-        return res.status(400).json({
-          success: false,
-          message:
-            "Username must be 3–20 characters and can contain letters, numbers, _ or .",
-        });
+        error.statusCode = 400;
+        error.message = "Username must be 3–20 characters and can contain letters, numbers, _ or .";
+        break;
 
       case "USER_NOT_FOUND":
-        return res.status(404).json({
-          success: false,
-          message: "User not found.",
-        });
+        error.statusCode = 404;
+        error.message = "User not found.";
+        break;
 
       default:
         console.error("Set username error:", error);
-        return res.status(500).json({
-          success: false,
-          message: "Server error",
-        });
     }
+    next(error);
   }
 };
-
-
-export const searchUsers = async (req: AuthRequest, res: Response) => {
-  try{
+export const searchUsers = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
     const userId = req.userId;
-    if(!userId){
-      return res.status(401).json({message: "Unauthorized"});
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
     const q = typeof req.query.q === "string" ? req.query.q : "";
@@ -87,11 +76,8 @@ export const searchUsers = async (req: AuthRequest, res: Response) => {
       data: users,
     })
 
-  }catch (error: any) {
+  } catch (error: any) {
     console.error("Search users error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch users",
-    });
+    next(error);
   }
 }

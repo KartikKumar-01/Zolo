@@ -1,10 +1,12 @@
+import dotenv from "dotenv";
+// Load .env variables before anything else
+dotenv.config();
+
 import http from "http";
 import app from "./app";
-import dotenv from "dotenv";
 import connectDB from "./config/db";
 import { initSocket } from "./socket";
 
-dotenv.config();  // Load .env variables
 connectDB();
 
 const PORT = process.env.PORT || 5000;

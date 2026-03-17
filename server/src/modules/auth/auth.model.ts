@@ -6,6 +6,7 @@ export interface IUser extends Document {
     username?: string;
     password: string;
     avatar?: string;
+    refreshToken: string | null;
     isOnline: boolean;
     lastSeen: Date;
     isBlocked: boolean;
@@ -42,6 +43,11 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
             lowercase: true,
             trim: true,
             index: true
+        },
+        refreshToken:{
+            type: String,
+            default: null,
+            select: false,
         },
         avatar: {
             type: String,

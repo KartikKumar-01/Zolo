@@ -1,11 +1,12 @@
-import { Response } from "express";
+import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import mongoose from "mongoose";
 import { createGroup, createOrGetDM, getConversationsService } from "./conversation.service";
 
 export const getOrCreateConversationController = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userId = req.userId;
@@ -41,16 +42,14 @@ export const getOrCreateConversationController = async (
     });
   } catch (error) {
     console.error("DM controller error: ", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
+    next(error);
   }
 };
 
 export const createGrooupConversationController = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const creatorId = req.userId;
@@ -85,22 +84,20 @@ export const createGrooupConversationController = async (
     });
   } catch (error) {
     console.error("Create Group Error: ", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(error);
   }
 };
 
 
 export const getConversations = async (
   req: AuthRequest,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const conversations = await getConversationsService(req.userId!);
     res.status(200).json({ success: true, conversations });
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+    next(err);
   }
 };

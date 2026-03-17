@@ -12,5 +12,5 @@ export const validate =
         errors: error.details.map((err) => err.message),
       });
     }
-    next();
+    next(); 
   };

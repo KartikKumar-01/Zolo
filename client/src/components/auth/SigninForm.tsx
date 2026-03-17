@@ -65,7 +65,6 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
 
     toast.error("Please fix the errors in the form");
   };
-  console.log("FORM ERRORS →", form.formState.errors);
   return (
     <Form {...form}>
       <form

@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import { fetchMessagesService, sendMessageService } from "./message.service";
 
-export const sendMessage = async (req: AuthRequest, res: Response) => {
+export const sendMessage = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { conversationId, content, type } = req.body;
     const userId = req.userId;
@@ -36,14 +36,11 @@ export const sendMessage = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error("Send Message Error: ", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    next(error);
   }
 };
 
-export const fetchMessages = async (req: AuthRequest, res: Response) => {
+export const fetchMessages = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { conversationId } = req.params;
     const { limit, before } = req.query;
@@ -68,9 +65,6 @@ export const fetchMessages = async (req: AuthRequest, res: Response) => {
       messages,
     });
   } catch (error: any) {
-    return res.status(400).json({
-      success: false,
-      message: error.message || "Failed to fetch messages",
-    });
+    next(error);
   }
 };

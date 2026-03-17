@@ -24,8 +24,12 @@ app.use("/api/conversations", conversationRoutes);
 app.use("/api/messages", messagesRoutes);
 app.use("/api/user", userRoutes)
 
+import { errorHandler } from "./middlewares/errorHandler";
+
 app.get("/", (req, res) => {
   res.send("Backend running");
 });
+
+app.use(errorHandler);
 
 export default app;
