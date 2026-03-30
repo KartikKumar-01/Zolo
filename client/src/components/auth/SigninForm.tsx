@@ -20,7 +20,7 @@ interface SignInFormProp {
 }
 
 const SigninForm = ({ toggleView }: SignInFormProp) => {
-  const {setUser} = useUser();
+  const { setUser } = useUser();
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -32,14 +32,13 @@ const SigninForm = ({ toggleView }: SignInFormProp) => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       const res = await loginApi(data);
-      const { success, message, tokens, user } = res.data;
+      const { success, message, user } = res.data;
 
       if (!success) {
         toast.error(message);
         return;
       }
 
-      localStorage.setItem("accessToken", tokens.access);
       setUser(user)
       toast(`Welcome back, ${user.name}`);
       navigate('/chat')

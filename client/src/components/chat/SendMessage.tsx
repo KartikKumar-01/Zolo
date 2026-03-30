@@ -1,11 +1,11 @@
-import {sendMessage} from "@/api/messages";
-import {useConversation} from "@/context/useConversation";
-import {useState} from "react";
-import {toast} from "sonner";
+import { sendMessage } from "@/api/messages";
+import { useConversation } from "@/context/useConversation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const SendMessage = () => {
 
-    const {selectedConversation} = useConversation();
+    const { selectedConversation } = useConversation();
     const [message, setMessage] = useState("");
     const handleSend = async () => {
         if (!message.trim()) {
@@ -16,7 +16,7 @@ const SendMessage = () => {
             return;
         }
         try {
-            const newMessage = await sendMessage({
+            await sendMessage({
                 conversationId: selectedConversation._id,
                 content: message,
             });

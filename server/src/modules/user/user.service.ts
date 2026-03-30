@@ -1,4 +1,5 @@
-import User from "../auth/auth.model";
+import { prisma } from "../../lib/prisma";
+import { Prisma } from "../../generated/prisma";
 
 interface SetUsernameType {
     userId: string;
@@ -6,9 +7,9 @@ interface SetUsernameType {
 }
 
 export const setUserNameService = async ({
-                                             userId,
-                                             username,
-                                         }: SetUsernameType) => {
+    userId,
+    username,
+}: SetUsernameType) => {
     username = username.toLowerCase().trim();
 
     if (username.length < 3) {
@@ -19,7 +20,11 @@ export const setUserNameService = async ({
         throw new Error("INVALID_USERNAME");
     }
 
-    const user = await User.findById(userId).select("username");
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, username: true },
+    });
+
     if (!user) {
         throw new Error("USER_NOT_FOUND");
     }
@@ -28,50 +33,63 @@ export const setUserNameService = async ({
         throw new Error("USERNAME_ALREADY_SET");
     }
 
-    user.username = username;
     try {
-        await user.save();
+        await prisma.user.update({
+            where: { id: userId },
+            data: { username },
+        });
     } catch (error: any) {
-        if (error.code === 11000) {
+        // Prisma unique constraint violation code
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
             throw new Error("USERNAME_TAKEN");
         }
         throw error;
     }
-    return {
-        username: user.username
-    };
+
+    return { username };
 };
 
-const escapeRegex = (str: string): string =>
-    str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-
-export const getUsers = async (searchQuery: string, currentUser: string) => {
-    let users;
-    const baseQuery = {
-        _id: {$ne: currentUser},
+export const getUsers = async (searchQuery: string, currentUserId: string) => {
+    const baseWhere: Prisma.UserWhereInput = {
+        id: { not: currentUserId },
         isBlocked: false,
-    }
+    };
 
     if (searchQuery && searchQuery.trim() !== "") {
-        const escapedQuery = escapeRegex(searchQuery.trim());
-        users = await User.find({
-            ...baseQuery,
-            $or: [
-                {name: {$regex: `^${escapedQuery}`, $options: "i"}},
-                {username: {$regex: `^${escapedQuery}`, $options: "i"}}
-            ]
-        }).select("_id name username avatar")
-            .limit(10)
-            .sort({
-                username: 1,
-                name: 1
-            })
-    } else {
-        users = await User.find(baseQuery)
-            .select("_id name username avatar")
-            .sort({name: 1})
-            .limit(10);
+        const q = searchQuery.trim();
+
+        const users = await prisma.user.findMany({
+            where: {
+                ...baseWhere,
+                OR: [
+                    { name: { startsWith: q, mode: "insensitive" } },
+                    { username: { startsWith: q, mode: "insensitive" } },
+                ],
+            },
+            select: {
+                id: true,
+                name: true,
+                username: true,
+                avatar: true,
+            },
+            orderBy: [{ username: "asc" }, { name: "asc" }],
+            take: 10,
+        });
+
+        return users.map(u => ({ ...u, _id: u.id }));
     }
-    return users;
-}
+
+    const users = await prisma.user.findMany({
+        where: baseWhere,
+        select: {
+            id: true,
+            name: true,
+            username: true,
+            avatar: true,
+        },
+        orderBy: { name: "asc" },
+        take: 10,
+    });
+
+    return users.map(u => ({ ...u, _id: u.id }));
+};

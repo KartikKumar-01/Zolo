@@ -1,6 +1,5 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
-import mongoose from "mongoose";
 import { createGroup, createOrGetDM, getConversationsService } from "./conversation.service";
 
 export const getOrCreateConversationController = async (
@@ -25,13 +24,6 @@ export const getOrCreateConversationController = async (
       return res
         .status(400)
         .json({ message: "Cannot create a DM with yourself" });
-    }
-
-    if (
-      !mongoose.Types.ObjectId.isValid(userId) ||
-      !mongoose.Types.ObjectId.isValid(otherUserId)
-    ) {
-      return res.status(400).json({ message: "Invalid userId or otherUserId" });
     }
 
     const conversation = await createOrGetDM(userId, otherUserId);

@@ -25,7 +25,7 @@ const ChatArea = ({ onBack }: ChatAreaProps) => {
           <ChatTopBar
             conversationName={
               selectedConversation.name ||
-              selectedConversation.participants.find((p) => p._id !== user?._id)
+              selectedConversation.participants.find((p) => p._id !== (user?.id || user?._id))
                 ?.name
             }
             isOnline={true}

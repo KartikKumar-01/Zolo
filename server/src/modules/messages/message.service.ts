@@ -1,7 +1,4 @@
-import mongoose from "mongoose";
-import Conversation from "../conversation/conversation.model";
-import Message from "./message.model";
-import ConversationRead from "../conversation/conversationRead.model";
+import { prisma } from "../../lib/prisma";
 
 interface SendMessageType {
   conversationId: string;
@@ -17,40 +14,60 @@ interface FetchMessageType {
   before?: string;
 }
 
+const formatMessage = (msg: any) => {
+  return {
+    ...msg,
+    _id: msg.id,
+    sender: msg.senderId,
+    readBy: msg.readBy ? msg.readBy.map((r: any) => r.userId) : [],
+  };
+};
+
 export const sendMessageService = async ({
   conversationId,
   senderId,
   content,
   type = "text",
 }: SendMessageType) => {
-  if (!mongoose.Types.ObjectId.isValid(conversationId)) {
-    throw new Error("Invalid conversation id");
-  }
 
-  const conversation = await Conversation.findById(conversationId);
+  const conversation = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+    include: { participants: true }
+  });
+
   if (!conversation) {
     throw new Error("Conversation not found");
   }
 
   const isParticipant = conversation.participants.some(
-    (id) => id.toString() === senderId
+    (p) => p.userId === senderId
   );
 
   if (!isParticipant) {
     throw new Error("Not a participant of this conversation");
   }
 
-  const message = await Message.create({
-    conversationId: new mongoose.Types.ObjectId(conversationId),
-    sender: new mongoose.Types.ObjectId(senderId),
-    content,
-    type,
-    readBy: [new mongoose.Types.ObjectId(senderId)],
+  const message = await prisma.message.create({
+    data: {
+      conversationId: conversationId,
+      senderId: senderId,
+      content,
+      type,
+      readBy: {
+        create: [{ userId: senderId }]
+      }
+    },
+    include: {
+      readBy: true
+    }
   });
 
-  conversation.lastMessage = message._id;
-  await conversation.save();
-  return message;
+  await prisma.conversation.update({
+    where: { id: conversationId },
+    data: { lastMessageId: message.id }
+  });
+
+  return formatMessage(message);
 };
 
 export const fetchMessagesService = async ({
@@ -59,17 +76,18 @@ export const fetchMessagesService = async ({
   limit = 20,
   before,
 }: FetchMessageType) => {
-  if (!mongoose.Types.ObjectId.isValid(conversationId)) {
-    throw new Error("Invalid conversation id");
-  }
-  const conversation = await Conversation.findById(conversationId);
+
+  const conversation = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+    include: { participants: true }
+  });
 
   if (!conversation) {
     throw new Error("Conversation not found");
   }
 
   const isParticipant = conversation.participants.some(
-    (id) => id.toString() === userId
+    (p) => p.userId === userId
   );
 
   if (!isParticipant) {
@@ -77,42 +95,48 @@ export const fetchMessagesService = async ({
   }
 
   const query: any = {
-    conversationId: new mongoose.Types.ObjectId(conversationId),
+    conversationId: conversationId,
   };
 
   if (before) {
-    query.createdAt = { $lt: new Date(before) };
+    query.createdAt = { lt: new Date(before) };
   }
 
-  const messages = await Message.find(query)
-    .sort({ createdAt: -1 })
-    .limit(limit + 1);
+  const messages = await prisma.message.findMany({
+    where: query,
+    orderBy: { createdAt: 'desc' },
+    take: limit + 1,
+    include: {
+      readBy: true
+    }
+  });
 
   const hasMore = messages.length > limit;
   if (hasMore) messages.pop();
 
-  let conversationRead = await ConversationRead.findOne({
-    conversationId: new mongoose.Types.ObjectId(conversationId),
-    userId: new mongoose.Types.ObjectId(userId),
-  });
-
-  if (!conversationRead) {
-    conversationRead = await ConversationRead.create({
-      conversationId: new mongoose.Types.ObjectId(conversationId),
-      userId: new mongoose.Types.ObjectId(userId),
-      lastReadMessageId: null,
-    });
-  }
-
   if (messages.length > 0) {
     const latestMessage = messages[0];
-    await ConversationRead.findOneAndUpdate(conversationRead._id, {
-      lastReadMessageId: latestMessage,
+
+    await prisma.conversationRead.upsert({
+      where: {
+        conversationId_userId: {
+          conversationId: conversationId,
+          userId: userId,
+        }
+      },
+      update: {
+        lastReadMessageId: latestMessage.id,
+      },
+      create: {
+        conversationId: conversationId,
+        userId: userId,
+        lastReadMessageId: latestMessage.id,
+      }
     });
   }
 
   return {
-    messages: messages.reverse(),
+    messages: messages.reverse().map(formatMessage),
     hasMore,
   };
 };

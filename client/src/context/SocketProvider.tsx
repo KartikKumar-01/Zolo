@@ -6,14 +6,11 @@ import { Socket } from 'socket.io-client';
 
 const SocketContext = createContext<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
 
-const SocketProvider = ({children}: {children: ReactNode}) => {
-    const {user} = useUser();
-    
+const SocketProvider = ({ children }: { children: ReactNode }) => {
+    const { user } = useUser();
+
     useEffect(() => {
-        if(!user) return;
-        socket.auth = {
-            token: localStorage.getItem("accessToken")
-        }
+        if (!user) return;
         socket.connect();
         console.log("Socket connected....");
 
@@ -21,11 +18,11 @@ const SocketProvider = ({children}: {children: ReactNode}) => {
             socket.disconnect();
         }
     }, [user])
-  return (
-    <SocketContext.Provider value={socket}>
-        {children}
-    </SocketContext.Provider>
-  )
+    return (
+        <SocketContext.Provider value={socket}>
+            {children}
+        </SocketContext.Provider>
+    )
 }
 
 export default SocketProvider

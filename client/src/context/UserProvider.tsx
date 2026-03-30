@@ -6,7 +6,7 @@ interface UserContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   logout: () => void;
-  loading: boolean; 
+  loading: boolean;
 }
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -16,37 +16,28 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
-    const token = localStorage.getItem("accessToken")
-    if(!token){
-      setLoading(false);
-      return;
-    }
-  
     const fetchMe = async () => {
-      try{
+      try {
         const res = await api.get('/auth/me');
         setUser(res.data.user);
       }
       catch (err) {
-          localStorage.removeItem("accessToken");
-          setUser(null);
-        } finally {
-          setLoading(false);
-        }
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchMe();
   }, [])
 
 
   const logout = async () => {
-    try{
+    try {
       await api.post('/auth/logout');
-    }catch(err){
+    } catch (err) {
       console.log("Logout error: ", err);
-    }finally {
+    } finally {
       setUser(null);
-      localStorage.removeItem("accessToken");
     }
   };
   return (

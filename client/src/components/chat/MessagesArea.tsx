@@ -61,7 +61,7 @@ const MessagesArea = () => {
             <ChatMessage
               key={msg._id}
               content={msg.content}
-              isOwn={msg.sender === user?._id}
+              isOwn={msg.sender === (user?.id || user?._id)}
             />
           ))}
           <div ref={messagesEndRef} />

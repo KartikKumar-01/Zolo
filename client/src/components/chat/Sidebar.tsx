@@ -1,6 +1,6 @@
 import '@/styles.css'
 import { useUser } from "@/context/useUser";
-import { MoreVertical } from "lucide-react";
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -48,7 +48,7 @@ const Sidebar = () => {
             </div>
           )}
         </button>
-        
+
         {showProfileMenu && (
           <div className="absolute left-full ml-2 top-0 w-48 bg-[#252A31] border border-[#30363D] rounded-lg shadow-lg overflow-hidden z-50">
             <div className="px-4 py-3 border-b border-[#30363D]">

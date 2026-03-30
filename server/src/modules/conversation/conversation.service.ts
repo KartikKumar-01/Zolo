@@ -1,99 +1,207 @@
-import Conversation, {IConversation} from "./conversation.model";
-import {HydratedDocument} from "mongoose";
-import mongoose from "mongoose";
-import ConversationRead from "./conversationRead.model";
-import Message from "../messages/message.model";
+import { prisma } from "../../lib/prisma";
+
+const formatConversation = (conversation: any) => {
+    return {
+        ...conversation,
+        _id: conversation.id,
+        participants: conversation.participants.map((p: any) => {
+            const user = p.user;
+            return {
+                ...user,
+                _id: user.id
+            };
+        }),
+        admins: conversation.admins ? conversation.admins.map((a: any) => {
+            const user = a.user;
+            return {
+                ...user,
+                _id: user.id
+            };
+        }) : [],
+        lastMessage: conversation.lastMessage ? {
+            ...conversation.lastMessage,
+            _id: conversation.lastMessage.id,
+            sender: conversation.lastMessage.sender ? {
+                ...conversation.lastMessage.sender,
+                _id: conversation.lastMessage.sender.id,
+            } : undefined
+        } : null
+    };
+};
 
 export const createOrGetDM = async (
     userId: string,
     otherUserId: string
-): Promise<HydratedDocument<IConversation>> => {
-
-    let conversation = await Conversation.findOne({
-        type: "dm",
-        participants: {$all: [userId, otherUserId], $size: 2},
+) => {
+    // Check if DM exists
+    const conversations = await prisma.conversation.findMany({
+        where: {
+            type: "dm",
+            participants: {
+                every: {
+                    userId: { in: [userId, otherUserId] }
+                }
+            }
+        },
+        include: {
+            participants: {
+                include: {
+                    user: {
+                        select: { id: true, name: true, avatar: true }
+                    }
+                }
+            }
+        }
     });
 
-    const uid = new mongoose.Types.ObjectId(userId);
-    const oid = new mongoose.Types.ObjectId(otherUserId);
+    // filter for exact match (both participants present, and only those 2)
+    let conversation = conversations.find(
+        (c) => c.participants.length === 2 &&
+            c.participants.some(p => p.userId === userId) &&
+            c.participants.some(p => p.userId === otherUserId)
+    );
 
     if (!conversation) {
-        const newConversation = {
-            type: "dm",
-            participants: [uid, oid],
-        };
-
-        conversation = await Conversation.create(newConversation);
+        conversation = await prisma.conversation.create({
+            data: {
+                type: "dm",
+                participants: {
+                    create: [
+                        { userId: userId },
+                        { userId: otherUserId }
+                    ]
+                }
+            },
+            include: {
+                participants: {
+                    include: {
+                        user: {
+                            select: { id: true, name: true, avatar: true }
+                        }
+                    }
+                }
+            }
+        });
     }
 
-    await conversation.populate("participants", "name avatar");
-
-    return conversation;
+    return formatConversation(conversation);
 };
 
 export const createGroup = async (
     name: string,
     participants: string[],
     creatorId: string
-): Promise<HydratedDocument<IConversation>> => {
-    const participantsIds = participants.map(id => new mongoose.Types.ObjectId(id));
+) => {
+    const participantIds = new Set(participants);
+    participantIds.add(creatorId);
+    const uniqueParticipants = Array.from(participantIds);
 
-    if (!participants.includes(creatorId)) {
-        participantsIds.push(new mongoose.Types.ObjectId(creatorId));
-    }
+    const conversation = await prisma.conversation.create({
+        data: {
+            name,
+            type: "group",
+            participants: {
+                create: uniqueParticipants.map(id => ({ userId: id }))
+            },
+            admins: {
+                create: [{ userId: creatorId }]
+            }
+        },
+        include: {
+            admins: {
+                include: {
+                    user: {
+                        select: { id: true, name: true, avatar: true }
+                    }
+                }
+            },
+            participants: {
+                include: {
+                    user: {
+                        select: { id: true, name: true, avatar: true }
+                    }
+                }
+            }
+        }
+    });
 
-    let conversation = await Conversation.create({
-        name,
-        type: "group",
-        participants: participantsIds,
-        admins: [new mongoose.Types.ObjectId(creatorId)]
-    })
-
-    await conversation.populate("admins", "name avatar");
-    await conversation.populate("participants", "name avatar");
-
-    return conversation;
+    return formatConversation(conversation);
 }
 
-
 export const getConversationsService = async (userId: string) => {
-    const userObjectId = new mongoose.Types.ObjectId(userId);
-
-    const conversations = await Conversation.find({
-        participants: userObjectId,
-    })
-        .populate("participants", "name avatar")
-        .populate("admins", "name avatar")
-        .populate({
-            path: "lastMessage",
-            populate: {
-                path: "sender",
-                select: "name avatar",
+    const conversations = await prisma.conversation.findMany({
+        where: {
+            participants: {
+                some: { userId: userId }
             }
-        })
-        .sort({updatedAt: -1});
+        },
+        include: {
+            participants: {
+                include: {
+                    user: {
+                        select: { id: true, name: true, avatar: true }
+                    }
+                }
+            },
+            admins: {
+                include: {
+                    user: {
+                        select: { id: true, name: true, avatar: true }
+                    }
+                }
+            },
+            lastMessage: {
+                include: {
+                    sender: {
+                        select: { id: true, name: true, avatar: true }
+                    }
+                }
+            }
+        },
+        orderBy: {
+            updatedAt: 'desc'
+        }
+    });
 
     const results = await Promise.all(
         conversations.map(async (conv) => {
-            const readState = await ConversationRead.findOne({
-                conversationId: conv._id,
-                userId: userObjectId,
+            const readState = await prisma.conversationRead.findUnique({
+                where: {
+                    conversationId_userId: {
+                        conversationId: conv.id,
+                        userId: userId,
+                    }
+                }
             });
 
-            const unreadQuery: any = {
-                conversationId: conv._id,
-                sender: {$ne: userObjectId},
-            };
+            let unreadCount = 0;
 
             if (readState?.lastReadMessageId) {
-                unreadQuery._id = {$gt: readState.lastReadMessageId};
+                // Get the last read message to find its createdAt time
+                const lastReadMessage = await prisma.message.findUnique({
+                    where: { id: readState.lastReadMessageId }
+                });
+
+                if (lastReadMessage) {
+                    unreadCount = await prisma.message.count({
+                        where: {
+                            conversationId: conv.id,
+                            senderId: { not: userId },
+                            createdAt: { gt: lastReadMessage.createdAt }
+                        }
+                    });
+                }
+            } else {
+                unreadCount = await prisma.message.count({
+                    where: {
+                        conversationId: conv.id,
+                        senderId: { not: userId }
+                    }
+                });
             }
 
-
-            const unreadCount = await Message.countDocuments(unreadQuery);
-
             return {
-                ...conv.toObject(),
+                ...formatConversation(conv),
                 unreadCount,
             };
         })

@@ -1,8 +1,8 @@
-import {useEffect, useState} from "react";
-import {Search, X} from "lucide-react";
-import type {User} from "@/types/auth.types";
-import {fetchSearchedUsers} from "@/api/user";
-import {useDebounce} from "@/utils/debounceHook";
+import { useEffect, useState } from "react";
+import { Search, X } from "lucide-react";
+import type { User } from "@/types/auth.types";
+import { fetchSearchedUsers } from "@/api/user";
+import { useDebounce } from "@/utils/debounceHook";
 
 export interface NewConversationDialogProps {
     isOpen: boolean;
@@ -11,10 +11,10 @@ export interface NewConversationDialogProps {
 }
 
 const NewConversationDialog = ({
-                                   isOpen,
-                                   onClose,
-                                   onStartConversation,
-                               }: NewConversationDialogProps) => {
+    isOpen,
+    onClose,
+    onStartConversation,
+}: NewConversationDialogProps) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
@@ -60,14 +60,14 @@ const NewConversationDialog = ({
                         className="text-gray-400 hover:text-white"
                         aria-label="Close dialog"
                     >
-                        <X className="w-6 h-6"/>
+                        <X className="w-6 h-6" />
                     </button>
                 </div>
 
                 {/* Search */}
                 <div className="p-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"/>
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                         <input
                             type="text"
                             placeholder="Search users..."
@@ -96,7 +96,7 @@ const NewConversationDialog = ({
                     {!loading &&
                         users.map((user) => (
                             <button
-                                key={user._id}
+                                key={user.id || user._id}
                                 onClick={() => onStartConversation(user)}
                                 className="w-full flex items-center gap-3 p-3 hover:bg-gray-700 rounded-lg text-left"
                             >

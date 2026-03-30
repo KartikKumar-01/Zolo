@@ -10,7 +10,7 @@ const ChatItem = ({ conversation, isActive, onClick }: ChatItemProp) => {
   const fallbackAvatar = "/profile-placeholder.jpg";
   const isGroup = conversation.type === "group";
   const { user } = useUser();
-  const loggedInUserId = user?._id;
+  const loggedInUserId = user?.id || user?._id;
   const profileImg = isGroup
     ? "../public/profile-placeholder.jpg"
     : conversation.participants.find((p) => p._id !== loggedInUserId)?.avatar;
@@ -23,9 +23,8 @@ const ChatItem = ({ conversation, isActive, onClick }: ChatItemProp) => {
     <div
       role="button"
       tabIndex={0}
-      className={`chat-item ${
-        isActive ? "active" : ""
-      } w-full h-[50px] flex items-center`}
+      className={`chat-item ${isActive ? "active" : ""
+        } w-full h-[50px] flex items-center`}
       onClick={onClick}
     >
       <div className="chat-img h-[40px] w-[40px]  rounded-md">

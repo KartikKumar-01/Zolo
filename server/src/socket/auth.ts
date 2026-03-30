@@ -6,7 +6,16 @@ interface AccessTokenPayload extends JwtPayload {
 }
 export const socketAuth = (socket: any, next: any) => {
   try {
-    const token = socket.handshake.auth?.token;
+    // Try reading accessToken from cookie header (HttpOnly cookie approach)
+    const rawCookies = socket.handshake.headers.cookie || "";
+    const cookies: Record<string, string> = Object.fromEntries(
+      rawCookies.split("; ").filter(Boolean).map((c: string) => {
+        const [k, ...v] = c.split("=");
+        return [k, v.join("=")];
+      })
+    );
+    const token = cookies["accessToken"] || socket.handshake.auth?.token;
+
     if (!token) {
       return next(new Error("Unauthorized"));
     }

@@ -1,29 +1,63 @@
-import User from "./auth.model";
+import { prisma } from "../../lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
+import { RedisService } from "../redis/redis.service";
 
 export const registerUser = async (
   name: string,
   email: string,
   password: string
 ) => {
-  const existingUser = await User.findOne({ email });
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
   if (existingUser) {
     throw new Error("User already exists");
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = await User.create({
-    name,
-    email,
-    password: hashedPassword,
+
+  const newUser = await prisma.user.create({
+    data: { name, email, password: hashedPassword },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      username: true,
+      avatar: true,
+      isOnline: true,
+      isBlocked: true,
+      lastSeen: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
+
   return newUser;
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const user = await User.findOne({ email });
+  // Explicitly select password + refreshToken (sensitive fields not returned by default)
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      username: true,
+      avatar: true,
+      isOnline: true,
+      isBlocked: true,
+      lastSeen: true,
+      createdAt: true,
+      updatedAt: true,
+      password: true,
+      refreshToken: true,
+    },
+  });
+
   if (!user) {
     throw new Error("Invalid email or password");
   }
@@ -34,25 +68,31 @@ export const loginUser = async (email: string, password: string) => {
   }
 
   const accessToken = jwt.sign(
-    { id: user._id },
+    { id: user.id },
     process.env.ACCESS_TOKEN_SECRET as string,
     { expiresIn: "15m" }
   );
 
   const refreshToken = jwt.sign(
-    { id: user._id },
+    { id: user.id },
     process.env.REFRESH_TOKEN_SECRET as string,
     { expiresIn: "7d" }
   );
 
-  user.refreshToken = refreshToken;
-  await user.save();
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { refreshToken },
+  });
 
-  const { password: _, ...safeUser } = user.toObject();
 
-  return {
-    user: safeUser,
-    accessToken,
-    refreshToken,
-  };
+
+  // Strip sensitive fields before returning
+  const { password: _, refreshToken: __, ...safeUser } = user;
+  try {
+    await RedisService.setUserOnline(user.id);
+  } catch (error) {
+    console.error("Redis error setting user online during login:", error);
+  }
+
+  return { user: safeUser, accessToken, refreshToken };
 };

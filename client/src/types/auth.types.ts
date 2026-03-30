@@ -1,8 +1,9 @@
-export interface User{
-    _id: string;
+export interface User {
+  id: string;
+  _id?: string;
   name: string;
   email: string;
-  username?:string | null;
+  username?: string | null;
   avatar: string;
   isOnline: boolean;
   isBlocked: boolean;
@@ -20,7 +21,7 @@ export interface LoginResponse {
 }
 
 export interface RegisterResponse {
-  success: boolean; 
+  success: boolean;
   message: string;
   user: User;
 }

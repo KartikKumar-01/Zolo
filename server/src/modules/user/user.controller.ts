@@ -1,6 +1,5 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
-import User from "../auth/auth.model";
 import { getUsers, setUserNameService } from "./user.service";
 
 export const setUserName = async (req: AuthRequest, res: Response, next: NextFunction) => {
