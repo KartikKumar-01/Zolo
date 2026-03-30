@@ -1,4 +1,4 @@
-import redis from "../../config/redis";
+import redis from "@zolo/redis";
 
 export const RedisService = {
   async setUserOnline(userId: string) {

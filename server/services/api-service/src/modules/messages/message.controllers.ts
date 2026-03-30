@@ -54,7 +54,7 @@ export const fetchMessages = async (req: AuthRequest, res: Response, next: NextF
     }
 
     const messages = await fetchMessagesService({
-      conversationId,
+      conversationId: conversationId as string,
       userId,
       limit: limit ? Number(limit) : undefined,
       before: before as string | undefined,

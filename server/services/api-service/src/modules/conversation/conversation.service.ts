@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "@zolo/prisma";
 
 const formatConversation = (conversation: any) => {
     return {

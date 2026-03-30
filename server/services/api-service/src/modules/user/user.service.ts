@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "@zolo/prisma";
 import { Prisma } from "../../generated/prisma";
 
 interface SetUsernameType {

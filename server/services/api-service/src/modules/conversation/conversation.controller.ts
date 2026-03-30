@@ -26,7 +26,7 @@ export const getOrCreateConversationController = async (
         .json({ message: "Cannot create a DM with yourself" });
     }
 
-    const conversation = await createOrGetDM(userId, otherUserId);
+    const conversation = await createOrGetDM(userId, otherUserId as string);
 
     return res.status(200).json({
       success: true,

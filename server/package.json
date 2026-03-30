@@ -1,48 +1,19 @@
 {
-  "name": "server",
+  "name": "zolo",
+  "private": true,
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "workspaces": [
+    "services/*",
+    "packages/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js"
+    "dev:api": "npm run dev -w api-service",
+    "dev:socket": "npm run dev -w socket-service",
+    "dev:consumer": "npm run dev -w consumer-service",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:socket\" \"npm run dev:consumer\"",
+    "postinstall": "npx --yes dotenv-cli -e services/api-service/.env -- prisma generate --schema=packages/prisma/schema.prisma"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "@prisma/adapter-pg": "^7.5.0",
-    "@prisma/client": "^7.5.0",
-    "bcrypt": "^6.0.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "helmet": "^8.1.0",
-    "ioredis": "^5.9.2",
-    "joi": "^18.0.2",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.0.1",
-    "morgan": "^1.10.1",
-    "pg": "^8.20.0",
-    "redis": "^5.10.0",
-    "socket.io": "^4.8.3"
-  },
-  "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
-    "@types/cookie-parser": "^1.4.10",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/joi": "^17.2.2",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/morgan": "^1.9.10",
-    "@types/node": "^24.12.0",
-    "@types/pg": "^8.18.0",
-    "prisma": "^7.5.0",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.9.3"
+    "@prisma/client": "^5.22.0"
   }
 }

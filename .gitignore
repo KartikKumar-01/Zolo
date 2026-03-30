@@ -1,43 +1,35 @@
 # ===============================
 # Node dependencies
 # ===============================
-server/node_modules/
-client/node_modules/
+node_modules/
 
 # ===============================
 # Environment variables
 # ===============================
-server/.env
-client/.env
-client/.env.local
-client/.env.development
-client/.env.production
+.env
+.env.*
+!.env.example
 
 # ===============================
-# Build output
+# Build output & Prisma
 # ===============================
-# Backend
-server/dist/
-server/build/
-server/out/
-
-# Frontend (Vite)
-client/dist/
-client/build/
-client/.vite/
+dist/
+build/
+out/
+.vite/
+/server/services/*/src/generated/prisma/
+generated/
 
 # ===============================
 # TypeScript cache
 # ===============================
-server/*.tsbuildinfo
-client/*.tsbuildinfo
+*.tsbuildinfo
 
 # ===============================
 # Logs
 # ===============================
-server/logs/
-server/*.log
-client/*.log
+logs/
+*.log
 
 # ===============================
 # System
