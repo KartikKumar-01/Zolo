@@ -163,24 +163,32 @@ export const getConversationsService = async (userId: string) => {
         }
     });
 
+    const conversationIds = conversations.map(c => c.id);
+
+    // Bulk fetch read states for all conversations
+    const readStates = await prisma.conversationRead.findMany({
+        where: {
+            conversationId: { in: conversationIds },
+            userId: userId
+        }
+    });
+    const readStateMap = new Map(readStates.map(rs => [rs.conversationId, rs]));
+
+    // Bulk fetch last read messages for dates
+    const lastReadMessageIds = readStates.map(rs => rs.lastReadMessageId).filter(Boolean) as string[];
+    const lastReadMessages = await prisma.message.findMany({
+        where: { id: { in: lastReadMessageIds } },
+        select: { id: true, createdAt: true }
+    });
+    const lastReadMessageMap = new Map(lastReadMessages.map(m => [m.id, m]));
+
     const results = await Promise.all(
         conversations.map(async (conv) => {
-            const readState = await prisma.conversationRead.findUnique({
-                where: {
-                    conversationId_userId: {
-                        conversationId: conv.id,
-                        userId: userId,
-                    }
-                }
-            });
-
+            const readState = readStateMap.get(conv.id);
             let unreadCount = 0;
 
             if (readState?.lastReadMessageId) {
-                // Get the last read message to find its createdAt time
-                const lastReadMessage = await prisma.message.findUnique({
-                    where: { id: readState.lastReadMessageId }
-                });
+                const lastReadMessage = lastReadMessageMap.get(readState.lastReadMessageId);
 
                 if (lastReadMessage) {
                     unreadCount = await prisma.message.count({

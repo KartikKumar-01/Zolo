@@ -62,10 +62,10 @@ export const sendMessageService = async ({
     }
   });
 
-  await prisma.conversation.update({
+  prisma.conversation.update({
     where: { id: conversationId },
     data: { lastMessageId: message.id }
-  });
+  }).catch(err => console.error("Failed to update conversation lastMessageId:", err));
 
   return formatMessage(message);
 };
@@ -117,7 +117,7 @@ export const fetchMessagesService = async ({
   if (messages.length > 0) {
     const latestMessage = messages[0];
 
-    await prisma.conversationRead.upsert({
+    prisma.conversationRead.upsert({
       where: {
         conversationId_userId: {
           conversationId: conversationId,
@@ -132,7 +132,7 @@ export const fetchMessagesService = async ({
         userId: userId,
         lastReadMessageId: latestMessage.id,
       }
-    });
+    }).catch(err => console.error("Failed to update read state asynchronously:", err));
   }
 
   return {

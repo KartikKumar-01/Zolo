@@ -6,10 +6,12 @@ import conversationRoutes from "./modules/conversation/conversation.routes";
 import messagesRoutes from "./modules/messages/message.routes"
 import userRoutes from "./modules/user/user.routes"
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 
 const app: Application = express();
 
 app.use(express.json());
+app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(
