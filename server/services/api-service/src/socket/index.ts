@@ -20,10 +20,23 @@ export const initSocket = (server: any) => {
         await RedisService.addSocket(socket.userId, socket.id);
         socket.join(socket.userId!);
 
+        io.emit('user:online', {
+            userId: socket.data.userId,
+        })
+
         registerConversationEvents(io, socket);
         socket.on("disconnect", async () => {
             console.log("user disconnected: ", socket.userId);
             await RedisService.removeSocket(socket.userId, socket.id);
+
+            const remSockets = await RedisService.getUserSockets(socket.data.userId);
+            if(remSockets.length == 0){
+                await RedisService.setUserOffline(socket.data.userId);
+                io.emit('user:offline', {
+                    userId: socket.data.userId,
+                    lastSeen: new Date(Date.now()).toISOString()
+                })
+            }
         })
     })
 }

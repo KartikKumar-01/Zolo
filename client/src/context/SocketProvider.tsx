@@ -11,18 +11,21 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         if (!user) return;
-        socket.connect();
-        console.log("Socket connected....");
+
+        if (!socket.connected) {
+            socket.connect();
+        }
 
         return () => {
             socket.disconnect();
-        }
-    }, [user])
+        };
+    }, [user?.id]);
+
     return (
         <SocketContext.Provider value={socket}>
             {children}
         </SocketContext.Provider>
-    )
-}
+    );
+};
 
 export default SocketProvider

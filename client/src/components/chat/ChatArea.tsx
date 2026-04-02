@@ -28,7 +28,9 @@ const ChatArea = ({ onBack }: ChatAreaProps) => {
               selectedConversation.participants.find((p) => p._id !== (user?.id || user?._id))
                 ?.name
             }
-            isOnline={true}
+            otherUserId={selectedConversation.participants.find((p) => p._id !== (user?.id || user?._id))?._id || null}
+            isOnline={selectedConversation.participants.find((p) => p._id !== (user?.id || user?._id))?.isOnline || false}
+            lastSeen={selectedConversation.participants.find((p) => p._id !== (user?.id || user?._id))?.lastSeen || null}
             participantsCount={selectedConversation.participants.length}
             onBack={onBack}
           />

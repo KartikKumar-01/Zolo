@@ -1,16 +1,26 @@
 import { prisma } from "@zolo/prisma";
 
-const formatConversation = (conversation: any) => {
+import { RedisService } from "@zolo/redis";
+
+export const formatConversationAsync = async (conversation: any) => {
+    const participants = await Promise.all(
+        conversation.participants.map(async (p: any) => {
+            const user = p.user;
+            const isOnline = await RedisService.isUserOnline(user.id);
+            const lastSeen = await RedisService.getUserLastSeen(user.id);
+            return {
+                ...user,
+                _id: user.id,
+                isOnline: isOnline === 1,
+                lastSeen,
+            };
+        })
+    );
+
     return {
         ...conversation,
         _id: conversation.id,
-        participants: conversation.participants.map((p: any) => {
-            const user = p.user;
-            return {
-                ...user,
-                _id: user.id
-            };
-        }),
+        participants,
         admins: conversation.admins ? conversation.admins.map((a: any) => {
             const user = a.user;
             return {
@@ -84,7 +94,7 @@ export const createOrGetDM = async (
         });
     }
 
-    return formatConversation(conversation);
+    return await formatConversationAsync(conversation);
 };
 
 export const createGroup = async (
@@ -125,7 +135,7 @@ export const createGroup = async (
         }
     });
 
-    return formatConversation(conversation);
+    return await formatConversationAsync(conversation);
 }
 
 export const getConversationsService = async (userId: string) => {
@@ -208,8 +218,9 @@ export const getConversationsService = async (userId: string) => {
                 });
             }
 
+            const formatted = await formatConversationAsync(conv);
             return {
-                ...formatConversation(conv),
+                ...formatted,
                 unreadCount,
             };
         })
