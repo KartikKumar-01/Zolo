@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../../middlewares/authMiddleware";
 import { fetchMessagesService, sendMessageService } from "./message.service";
+import { sendMessage as publishToKafka } from "@zolo/kafka";
 
 export const sendMessage = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -25,9 +26,9 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
       type,
     });
 
-    const io = req.app.get("io");
-    console.log("Emitting message:new to room:", `conversation:${conversationId}`);
-    io.to(`conversation:${conversationId}`).emit("message:new", message);
+    // Produce message to Kafka instead of emitting socket event directly
+    console.log("Publishing message to Kafka topic 'chat-messages'");
+    await publishToKafka("chat-messages", [{ value: JSON.stringify(message) }]);
 
     return res.status(201).json({
       success: true,

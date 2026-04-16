@@ -2,7 +2,8 @@ import { Server, Socket } from "socket.io"
 import { Server as HttpServer } from "http";
 import { socketAuth } from "./auth";
 import { registerConversationEvents } from "./events/conversation.events";
-import { RedisService } from "@zolo/redis";
+import { RedisService, pubClient, subClient, subscribe } from "@zolo/redis";
+import { createAdapter } from "@socket.io/redis-adapter";
 interface AuthenticatedSocket extends Socket {
     userId?: string;
 }
@@ -15,6 +16,22 @@ export const initSocket = (server: HttpServer) => {
             credentials: true,
         }
     })
+
+    // 1. Mount Redis Adapter for Native Socket.IO Clustering
+    io.adapter(createAdapter(pubClient, subClient));
+
+    // 2. Custom Event Bus for Inter-Service Communication
+    // E.g., Api/Consumer service publishes a message into "socket:emit"
+    subscribe("socket:*", (message: any, channel: string) => {
+        if (!message || !message.event) return;
+        
+        console.log(`[Socket Bus] Intercepted event on ${channel}, forwarding ${message.event} to room: ${message.room || 'all'}`);
+        if (message.room) {
+            io.to(message.room).emit(message.event, message.data);
+        } else {
+            io.emit(message.event, message.data);
+        }
+    });
 
     io.use(socketAuth);
 

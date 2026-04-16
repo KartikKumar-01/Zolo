@@ -18,4 +18,8 @@ redis.on("error", (err) => {
 })
 
 export default redis;
+export const pubClient = redis.duplicate();
+export const subClient = redis.duplicate();
 export { RedisService } from "./redis.service";
+export { publishMessage } from "./publisher";
+export { subscribe } from "./subscriber";

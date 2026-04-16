@@ -7,6 +7,6 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  "join-conversation": (conversationId: string) => void;
-  "leave-conversation": (conversationId: string) => void;
+  "conversation:join": (conversationId: string) => void;
+  "conversation:leave": (conversationId: string) => void;
 }

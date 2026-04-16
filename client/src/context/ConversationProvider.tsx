@@ -57,15 +57,15 @@ export const ConversationProvider = ({ children }: { children: ReactNode }) => {
       prevConversationIdRef.current &&
       prevConversationIdRef.current !== conversationId
     ) {
-      socket.emit("leave-conversation", prevConversationIdRef.current);
+      socket.emit("conversation:leave", prevConversationIdRef.current);
     }
 
-    socket.emit("join-conversation", conversationId);
+    socket.emit("conversation:join", conversationId);
     prevConversationIdRef.current = conversationId;
     console.log("Room connected for conversation id: ", conversationId);
 
     return () => {
-      socket.emit("leave-conversation", conversationId);
+      socket.emit("conversation:leave", conversationId);
     };
   }, [selectedConversation]);
 

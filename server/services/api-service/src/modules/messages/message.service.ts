@@ -1,4 +1,5 @@
 import { prisma } from "@zolo/prisma";
+import crypto from "crypto";
 
 interface SendMessageType {
   conversationId: string;
@@ -47,25 +48,16 @@ export const sendMessageService = async ({
     throw new Error("Not a participant of this conversation");
   }
 
-  const message = await prisma.message.create({
-    data: {
-      conversationId: conversationId,
-      senderId: senderId,
-      content,
-      type,
-      readBy: {
-        create: [{ userId: senderId }]
-      }
-    },
-    include: {
-      readBy: true
-    }
-  });
-
-  prisma.conversation.update({
-    where: { id: conversationId },
-    data: { lastMessageId: message.id }
-  }).catch(err => console.error("Failed to update conversation lastMessageId:", err));
+  const message = {
+    id: crypto.randomUUID(),
+    conversationId,
+    senderId,
+    content,
+    type,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    readBy: [{ userId: senderId }]
+  };
 
   return formatMessage(message);
 };
