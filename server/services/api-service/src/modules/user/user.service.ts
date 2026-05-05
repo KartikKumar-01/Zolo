@@ -1,5 +1,5 @@
 import { prisma } from "@zolo/prisma";
-import { Prisma } from "../../generated/prisma";
+import { Prisma } from "@prisma/client";
 
 interface SetUsernameType {
     userId: string;
