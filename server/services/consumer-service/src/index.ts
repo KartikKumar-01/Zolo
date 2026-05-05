@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import path from "path";
-// Load env variables (pointing to api-service where the variables are stored)
 dotenv.config({ path: path.resolve(__dirname, "../../api-service/.env") });
 
 import { prisma } from "@zolo/prisma";
@@ -15,11 +14,9 @@ async function messageHandler(payload: any) {
         const { message, topic } = payload;
         if (!message || !message.value) return;
         
-        // Parse the Kafka payload
         const parsedMessage = JSON.parse(message.value.toString());
         console.log(`[Consumer] Processing new message from ${parsedMessage.senderId} for conversation ${parsedMessage.conversationId}`);
 
-        // Persist message to PostgreSQL using Prisma
         await prisma.message.create({
             data: {
                 id: parsedMessage.id,
@@ -35,13 +32,11 @@ async function messageHandler(payload: any) {
             }
         });
 
-        // Update the conversation's lastMessageId
         await prisma.conversation.update({
             where: { id: parsedMessage.conversationId },
             data: { lastMessageId: parsedMessage.id }
         });
 
-        // Forward this payload to Redis so the socket-service can broadcast it
         const pubPayload = {
             room: `conversation:${parsedMessage.conversationId}`,
             event: "message:new",

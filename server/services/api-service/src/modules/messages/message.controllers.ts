@@ -19,16 +19,21 @@ export const sendMessage = async (req: AuthRequest, res: Response, next: NextFun
       });
     }
 
+    console.time("DB_Query_Time");
     const message = await sendMessageService({
       conversationId,
       senderId: userId,
       content,
       type,
     });
+    console.timeEnd("DB_Query_Time");
 
-    // Produce message to Kafka instead of emitting socket event directly
+    // Produce message to Kafka asynchronously (Fire-and-Forget)
+    console.time("Kafka_Dispatch_Time");
     console.log("Publishing message to Kafka topic 'chat-messages'");
-    await publishToKafka("chat-messages", [{ value: JSON.stringify(message) }]);
+    publishToKafka("chat-messages", [{ value: JSON.stringify(message) }])
+      .catch(err => console.error("Kafka Async Publish Error:", err));
+    console.timeEnd("Kafka_Dispatch_Time");
 
     return res.status(201).json({
       success: true,

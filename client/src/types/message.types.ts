@@ -12,7 +12,7 @@ export interface Message{
 }
 
 export interface MessageResponse{
-    _id: string,
+    id: string,
     conversationId: string,
     sender: string,
     content: string,

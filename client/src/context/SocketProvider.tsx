@@ -14,6 +14,7 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
 
         if (!socket.connected) {
             socket.connect();
+            console.log(import.meta.env.VITE_SOCKET_URL)
         }
 
         return () => {

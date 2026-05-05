@@ -1,7 +1,7 @@
 import { prisma } from "@zolo/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { RedisService } from "../redis/redis.service";
+import { RedisService } from "@zolo/redis";
 
 export const registerUser = async (
   name: string,

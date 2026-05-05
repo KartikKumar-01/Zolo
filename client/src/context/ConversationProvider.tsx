@@ -25,14 +25,16 @@ export const ConversationContext =
   createContext<ConversationContextType | null>(null);
 
 export const ConversationProvider = ({ children }: { children: ReactNode }) => {
-  const [selectedConversation, _setSelectedConversation] = useState<Conversation | null>(null);
+  const [selectedConversation, _setSelectedConversation] =
+    useState<Conversation | null>(null);
   const [messages, setMessages] = useState<MessageResponse[]>([]);
-
-  const prevConversationIdRef = useRef<string | null>(null);
-
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
+  const prevConversationIdRef = useRef<string | null>(null);
+  const selectedConversationRef = useRef<Conversation | null>(null);
+
   const setSelectedConversation = (conversation: Conversation | null) => {
+    selectedConversationRef.current = conversation;
     _setSelectedConversation((prev) => {
       if (prev?._id === conversation?._id) return prev;
       setMessages([]);
@@ -62,18 +64,21 @@ export const ConversationProvider = ({ children }: { children: ReactNode }) => {
 
     socket.emit("conversation:join", conversationId);
     prevConversationIdRef.current = conversationId;
-    console.log("Room connected for conversation id: ", conversationId);
 
     return () => {
       socket.emit("conversation:leave", conversationId);
     };
   }, [selectedConversation]);
 
+  // Registered once — uses ref to always read the latest selected conversation
   useEffect(() => {
     const handleNewMessage = (message: MessageResponse) => {
-      if (message.conversationId !== selectedConversation?._id) return;
+      if (message.conversationId !== selectedConversationRef.current?._id) return;
 
-      setMessages((prev) => [...prev, message]);
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === message.id)) return prev;
+        return [...prev, message];
+      });
     };
 
     socket.on("message:new", handleNewMessage);
@@ -81,7 +86,7 @@ export const ConversationProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       socket.off("message:new", handleNewMessage);
     };
-  }, [selectedConversation?._id]);
+  }, []); // ✅ empty deps — registers exactly once, no re-registration on conversation switch
 
   return (
     <ConversationContext.Provider

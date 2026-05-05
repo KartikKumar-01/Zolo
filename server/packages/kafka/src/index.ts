@@ -2,7 +2,7 @@ import { Kafka } from "kafkajs";
 
 const kafka: Kafka = new Kafka({
     clientId: "zolo-kafka",
-    brokers: ["localhost:9092"],
+    brokers: [process.env.KAFKA_BROKERS || "localhost:9092"],
 });
 
 export default kafka;

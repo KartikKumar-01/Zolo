@@ -17,11 +17,9 @@ export const initSocket = (server: HttpServer) => {
         }
     })
 
-    // 1. Mount Redis Adapter for Native Socket.IO Clustering
     io.adapter(createAdapter(pubClient, subClient));
 
-    // 2. Custom Event Bus for Inter-Service Communication
-    // E.g., Api/Consumer service publishes a message into "socket:emit"
+
     subscribe("socket:*", (message: any, channel: string) => {
         if (!message || !message.event) return;
         
@@ -55,17 +53,17 @@ export const initSocket = (server: HttpServer) => {
 
             const connectedSockets = await io.in(socket.userId).fetchSockets();
             // const connectedSockets = await RedisService.getUserSockets(socket.userId);
-            console.log(`🔍 User ${socket.userId} has ${connectedSockets.length} sockets still connected.`);
+            console.log(`User ${socket.userId} has ${connectedSockets.length} sockets still connected.`);
 
             if (connectedSockets.length === 0) {
-                console.log(`🔴 Setting user ${socket.userId} to offline in Redis...`);
+                console.log(`Setting user ${socket.userId} to offline in Redis...`);
                 await RedisService.setUserOffline(socket.userId);
                 io.emit('user:offline', {
                     userId: socket.userId,
                     lastSeen: new Date(Date.now()).toISOString()
                 })
             } else {
-                console.log(`⚠️ User ${socket.userId} still has other active tabs/sockets.`);
+                console.log(`User ${socket.userId} still has other active tabs/sockets.`);
             }
         })
     })
