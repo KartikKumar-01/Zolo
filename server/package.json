@@ -14,6 +14,7 @@
     "postinstall": "npx --yes dotenv-cli -e services/api-service/.env -- prisma generate --schema=packages/prisma/schema.prisma"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0"
+    "@prisma/client": "^5.22.0",
+    "pg": "^8.20.0"
   }
 }

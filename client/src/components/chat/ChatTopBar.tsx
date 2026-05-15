@@ -1,9 +1,8 @@
 import { ArrowLeft, MoreVertical } from "lucide-react";
-import { useState, useRef, useEffect, useId, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useUser } from "@/context/useUser";
 import { useNavigate } from "react-router-dom";
 import { socket } from "@/lib/socket";
-import { string } from "zod";
 
 interface ChatTopBarProp {
   conversationName?: string;

@@ -30,6 +30,7 @@ services:
       - services/api-service/.env
     environment:
       - KAFKA_BROKERS=kafka:29092
+      - NODE_OPTIONS=--dns-result-order=ipv4first
     depends_on:
       - kafka
 
@@ -43,6 +44,7 @@ services:
       - services/socket-service/.env
     environment:
       - KAFKA_BROKERS=kafka:29092
+      - NODE_OPTIONS=--dns-result-order=ipv4first
       - SOCKET_PORT=8001
     depends_on:
       - kafka
@@ -57,8 +59,16 @@ services:
       - services/consumer-service/.env
     environment:
       - KAFKA_BROKERS=kafka:29092
+      - NODE_OPTIONS=--dns-result-order=ipv4first
     depends_on:
       - kafka
+
+  client:
+    restart: always
+    build:
+      context: ../client
+      dockerfile: Dockerfile
+
 
   nginx:
     restart: always
@@ -70,6 +80,7 @@ services:
     depends_on:
       - api-service
       - socket-service
+      - client
 
 volumes:
   kafka_data:

@@ -59,7 +59,7 @@ const MessagesArea = () => {
         <div className="flex flex-col gap-1.5 px-3 sm:px-4 py-3 sm:py-4 w-full">
           {messages.map((msg) => (
             <ChatMessage
-              key={msg._id}
+              key={(msg as any)._id}
               content={msg.content}
               isOwn={msg.sender === (user?.id || user?._id)}
             />
