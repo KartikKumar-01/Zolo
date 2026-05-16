@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   kafka:
+    restart: always
     image: confluentinc/confluent-local:7.5.0
     hostname: kafka
     container_name: kafka
